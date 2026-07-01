@@ -1,0 +1,38 @@
+name: Security report
+description: Report a security concern without public exploit details
+title: "[Security]: "
+labels:
+  - security
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include exploit details, secrets, customer data, or private content in public issues. Use GitHub private vulnerability reporting when available."
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: High-level description only.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Tenant isolation
+        - Widget embed
+        - Domain allow-listing
+        - Crawler
+        - Retrieval
+        - Dashboard auth
+        - Dependency
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential impact
+      description: Describe impact without exploit instructions.
+    validations:
+      required: true

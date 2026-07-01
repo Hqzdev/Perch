@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose an improvement to Perch
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Customer problem
+      description: What user or customer problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should Perch do?
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Roadmap tier
+      options:
+        - Tier A
+        - Tier B
+        - Tier C
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and tradeoffs
+      description: What complexity, security risk, or maintenance cost does this add?
