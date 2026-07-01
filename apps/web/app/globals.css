@@ -108,6 +108,49 @@ body > div section [style*="border-radius:18px"]:hover {
   transform: translateY(-3px);
 }
 
+.faq-item {
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.faq-answer {
+  max-height: 240px;
+  opacity: 1;
+  transition: max-height 220ms ease, opacity 180ms ease, padding 220ms ease;
+}
+
+.faq-item[data-open="false"] .faq-answer {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+}
+
+.faq-indicator {
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.faq-item[data-open="true"] .faq-indicator {
+  transform: rotate(180deg);
+}
+
+.perch-copy-button {
+  min-width: 72px;
+  min-height: 32px;
+  border: 1px solid rgba(18, 183, 106, 0.35);
+  border-radius: 999px;
+  background: rgba(18, 183, 106, 0.12);
+  color: #12b76a;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 160;
+}
+
 .perch-widget {
   position: fixed;
   right: clamp(14px, 3vw, 28px);

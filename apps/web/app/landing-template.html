@@ -26,7 +26,6 @@ body{margin:0;background:#FBFAF5;color:#14241d;font-family:"IBM Plex Sans",syste
   <div style="display:flex;align-items:center;gap:28px;font-size:14.5px;font-weight:500">
     <a href="#demo" style="color:#46564f;text-decoration:none">Demo</a>
     <a href="#how" style="color:#46564f;text-decoration:none">How it works</a>
-    <a href="#features" style="color:#46564f;text-decoration:none">Features</a>
     <a href="#dashboard" style="color:#46564f;text-decoration:none">Dashboard</a>
     <a href="#pricing" style="color:#46564f;text-decoration:none">Pricing</a>
   </div>
@@ -191,43 +190,11 @@ body{margin:0;background:#FBFAF5;color:#14241d;font-family:"IBM Plex Sans",syste
       <span style="width:9px;height:9px;border-radius:50%;background:#FFBD2E"></span>
       <span style="width:9px;height:9px;border-radius:50%;background:#28C840"></span>
       <span style="margin-left:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#6E8078">index.html</span>
-      <span style="margin-left:auto;font-size:11px;font-weight:600;color:#12B76A">copy</span>
+      <span id="perch-copy-slot" style="margin-left:auto;display:inline-flex"></span>
     </div>
     <pre style="margin:0;padding:20px 18px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:13.5px;line-height:1.7"><span style="color:#6E8078">&lt;!-- Add before &lt;/body&gt; --&gt;</span>
 <span style="color:#7FB2FF">&lt;script</span> <span style="color:#FDB022">src</span>=<span style="color:#9BE7C0">"https://cdn.perch.ai/widget.js"</span>
         <span style="color:#FDB022">data-perch-key</span>=<span style="color:#9BE7C0">"pk_live_8f2c...a91"</span><span style="color:#7FB2FF">&gt;&lt;/script&gt;</span></pre>
-  </div>
-</section>
-
-<a id="features"></a>
-<section style="padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <div style="max-width:700px;margin-bottom:44px">
-    <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#12B76A;margin-bottom:12px">Features</div>
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,46px);line-height:1.05;letter-spacing:-.02em;margin:0">Everything needed to answer with confidence.</h2>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:16px">
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 11.5a7 7 0 0 1 7-7h1a7 7 0 0 1 0 14H7l-2.6 2.2c-.4.3-.6.1-.6-.4V15a7 7 0 0 1-.8-3.5Z" stroke="#12B76A" stroke-width="1.7" stroke-linejoin="round"/><path d="M8.5 10.5h7M8.5 13.5h4" stroke="#12B76A" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Grounded in your content</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">Answers are drawn only from your indexed pages — never invented.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M10 14a3.4 3.4 0 0 0 5 0l3-3a3.4 3.4 0 0 0-5-5l-1.4 1.4" stroke="#2E90FA" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 10a3.4 3.4 0 0 0-5 0l-3 3a3.4 3.4 0 0 0 5 5l1.4-1.4" stroke="#2E90FA" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Source citations</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">Every answer links to the exact pages it was built from, so visitors can verify.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M9 8.5 5 12l4 3.5M15 8.5 19 12l-4 3.5M13.2 6 10.8 18" stroke="#E59500" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">One-line install</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">A single script tag. No framework, no build step, no backend to run.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="10" height="10" rx="2.6" stroke="#12B76A" stroke-width="1.7"/><rect x="10.5" y="10.5" width="10" height="10" rx="2.6" fill="#fff" stroke="#12B76A" stroke-width="1.7"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Tenant isolation</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">Each site's index is stored and queried separately. No cross-tenant bleed.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3.2 5 6v5.2c0 4.3 2.9 7.7 7 9 4.1-1.3 7-4.7 7-9V6l-7-2.8Z" stroke="#2E90FA" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.2 12 11.2 14l3.6-3.9" stroke="#2E90FA" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Domain allow-listing</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">The widget only runs on domains you approve. Unauthorized embeds are blocked.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 12h3.4l2-6 3.6 12 2.4-8 1.5 2H21" stroke="#E59500" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Streaming responses</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">Answers stream token-by-token so visitors see progress immediately.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M19.5 11a7.5 7.5 0 0 0-13-4.4M4.5 13a7.5 7.5 0 0 0 13 4.4" stroke="#12B76A" stroke-width="1.7" stroke-linecap="round"/><path d="M6.6 3v3.6H3M17.4 21v-3.6H21" stroke="#12B76A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Automatic reindexing</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">Change your content and Perch reindexes on a schedule — answers stay current.</p></div>
-    <div style="background:#fff;border:1px solid #E7E4D8;border-radius:14px;padding:24px"><div style="margin-bottom:15px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 20V11M11 20V5M17 20v-6M4 20h15" stroke="#2E90FA" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;margin:0 0 7px">Dashboard analytics</h3><p style="font-size:13.5px;line-height:1.6;color:#46564f;margin:0">See top questions, coverage gaps, and crawl health at a glance.</p></div>
-  </div>
-</section>
-
-<section style="padding:0 clamp(18px,4vw,52px) clamp(48px,6vw,80px)">
-  <div style="max-width:700px;margin-bottom:32px">
-    <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2E90FA;margin-bottom:12px">Use cases</div>
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,42px);line-height:1.06;letter-spacing:-.02em;margin:0">If it lives on a page, Perch can answer it.</h2>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:14px">
-    <div style="background:#EAF7EF;border:1px solid #C5EAD5;border-radius:14px;padding:22px 20px"><div style="margin-bottom:13px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M6 4h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V6a2 2 0 0 1 1-2Z" stroke="#14241d" stroke-width="1.7" stroke-linejoin="round"/><path d="M5 18.5A2 2 0 0 1 7 17h11" stroke="#14241d" stroke-width="1.7"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 6px">SaaS docs</h3><p style="font-size:13px;line-height:1.55;color:#46564f;margin:0">Deflect support tickets with answers from your own documentation.</p></div>
-    <div style="background:#E7F1FD;border:1px solid #C6DEFB;border-radius:14px;padding:22px 20px"><div style="margin-bottom:13px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 4h1.8l1.9 9.6a1.5 1.5 0 0 0 1.5 1.2h7.5a1.5 1.5 0 0 0 1.5-1.2L19 7H6" stroke="#14241d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.4" stroke="#14241d" stroke-width="1.7"/><circle cx="16.5" cy="19" r="1.4" stroke="#14241d" stroke-width="1.7"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 6px">E-commerce support</h3><p style="font-size:13px;line-height:1.55;color:#46564f;margin:0">Shipping, returns, sizing — answered from your policy pages.</p></div>
-    <div style="background:#FEF6E6;border:1px solid #F6E2B0;border-radius:14px;padding:22px 20px"><div style="margin-bottom:13px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="7.5" width="18" height="12" rx="2" stroke="#14241d" stroke-width="1.7"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5" stroke="#14241d" stroke-width="1.7" stroke-linecap="round"/><path d="M3 12.5h18" stroke="#14241d" stroke-width="1.7"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 6px">Agencies</h3><p style="font-size:13px;line-height:1.55;color:#46564f;margin:0">Ship a grounded assistant on every client site from one dashboard.</p></div>
-    <div style="background:#EAF7EF;border:1px solid #C5EAD5;border-radius:14px;padding:22px 20px"><div style="margin-bottom:13px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M2.5 9 12 5l9.5 4-9.5 4-9.5-4Z" stroke="#14241d" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 11v4.2c0 1.2 2.5 2.8 5.5 2.8s5.5-1.6 5.5-2.8V11" stroke="#14241d" stroke-width="1.7"/><path d="M21.5 9v4.5" stroke="#14241d" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 6px">Course creators</h3><p style="font-size:13px;line-height:1.55;color:#46564f;margin:0">Turn lesson pages into a tutor that cites the exact module.</p></div>
-    <div style="background:#E7F1FD;border:1px solid #C6DEFB;border-radius:14px;padding:22px 20px"><div style="margin-bottom:13px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M14.5 3.5c2.7.8 5.2 3.3 6 6-1.8 4-5 7-9.5 8.5L7 14C8.5 9.5 11.5 5.3 14.5 3.5Z" stroke="#14241d" stroke-width="1.7" stroke-linejoin="round"/><circle cx="14.3" cy="9.7" r="1.6" stroke="#14241d" stroke-width="1.7"/><path d="M7 14c-1.5.5-2.5 2-3 4.5 2.5-.5 4-1.5 4.5-3" stroke="#14241d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 6px">Product sites</h3><p style="font-size:13px;line-height:1.55;color:#46564f;margin:0">Let prospects interrogate your marketing site and get real answers.</p></div>
   </div>
 </section>
 
@@ -370,49 +337,48 @@ body{margin:0;background:#FBFAF5;color:#14241d;font-family:"IBM Plex Sans",syste
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,42px);line-height:1.06;letter-spacing:-.02em;margin:0">The questions we get most.</h2>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      
-            <div class="faq-item" data-open="true" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">Will Perch slow down my website?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #84a36a; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">−</span>
-              </button>
-              <div style="padding: 0 24px 24px; color: #5b6656; font-size: 16px; line-height: 1.7;">No. The widget loads asynchronously and does not block your main page rendering. It is designed to stay lightweight and fast.</div>
-            </div>
-            <div class="faq-item" data-open="false" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">Can I control what the assistant says?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef3ea; color: #5d7550; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">+</span>
-              </button>
-              
-            </div>
-            <div class="faq-item" data-open="false" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">Does Perch work with my existing stack?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef3ea; color: #5d7550; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">+</span>
-              </button>
-              
-            </div>
-            <div class="faq-item" data-open="false" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">What happens when Perch cannot answer?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef3ea; color: #5d7550; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">+</span>
-              </button>
-              
-            </div>
-            <div class="faq-item" data-open="false" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">Is this only for support?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef3ea; color: #5d7550; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">+</span>
-              </button>
-              
-            </div>
-            <div class="faq-item" data-open="false" style="background: rgba(255, 255, 255, 0.9); border: 1px solid #d7ded5; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px rgba(18, 24, 16, 0.06);">
-              <button class="faq-question" style="width: 100%; border: 0; background: transparent; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; text-align: left;">
-                <span style="font-size: 18px; font-weight: 850; color: #162011;">Can we launch with a pilot first?</span>
-                <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef3ea; color: #5d7550; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;">+</span>
-              </button>
-              
-            </div>
+      <div class="faq-item" data-open="true" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">Will Perch slow down my website?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#84a36a;color:#ffffff;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">−</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">No. The widget loads asynchronously and does not block your main page rendering. It is designed to stay lightweight and fast.</div>
+      </div>
+      <div class="faq-item" data-open="false" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">Can I control what the assistant says?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#eef3ea;color:#5d7550;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">+</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">Yes. Perch answers from your approved site content, docs, policies, and product data. You can tune tone, fallback behavior, and handoff rules.</div>
+      </div>
+      <div class="faq-item" data-open="false" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">Does Perch work with my existing stack?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#eef3ea;color:#5d7550;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">+</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">Yes. Perch is installed with a small script tag, so it can sit on top of a modern website without forcing a frontend rewrite.</div>
+      </div>
+      <div class="faq-item" data-open="false" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">What happens when Perch cannot answer?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#eef3ea;color:#5d7550;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">+</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">It can ask a clarifying question, suggest the best next action, or route the visitor to your team depending on the workflow you configure.</div>
+      </div>
+      <div class="faq-item" data-open="false" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">Is this only for support?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#eef3ea;color:#5d7550;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">+</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">No. It is useful for sales, product discovery, onboarding, documentation, and support because it understands the page the visitor is already viewing.</div>
+      </div>
+      <div class="faq-item" data-open="false" style="background:rgba(255,255,255,0.9);border:1px solid #d7ded5;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,24,16,0.06)">
+        <button type="button" class="faq-question" data-faq-question style="width:100%;border:0;background:transparent;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer;text-align:left;font-family:'IBM Plex Sans',sans-serif">
+          <span style="font-size:18px;font-weight:850;color:#162011">Can we launch with a pilot first?</span>
+          <span class="faq-indicator" style="width:34px;height:34px;border-radius:999px;background:#eef3ea;color:#5d7550;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">+</span>
+        </button>
+        <div class="faq-answer" style="padding:0 24px 24px;color:#5b6656;font-size:16px;line-height:1.7">Yes. The recommended path is a focused pilot on key pages, then expansion once answer quality and handoff rules are proven.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -437,7 +403,7 @@ body{margin:0;background:#FBFAF5;color:#14241d;font-family:"IBM Plex Sans",syste
       </div>
       <p style="font-size:13.5px;line-height:1.6;color:#8A968F;margin:0">The AI assistant for your website. Answers from your content, cited every time.</p>
     </div>
-    <div><div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8A968F;margin-bottom:14px">Product</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#demo" style="color:#46564f;text-decoration:none">Demo</a><a href="#features" style="color:#46564f;text-decoration:none">Features</a><a href="#dashboard" style="color:#46564f;text-decoration:none">Dashboard</a><a href="#pricing" style="color:#46564f;text-decoration:none">Pricing</a></div></div>
+    <div><div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8A968F;margin-bottom:14px">Product</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#demo" style="color:#46564f;text-decoration:none">Demo</a><a href="#dashboard" style="color:#46564f;text-decoration:none">Dashboard</a><a href="#pricing" style="color:#46564f;text-decoration:none">Pricing</a></div></div>
     <div><div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8A968F;margin-bottom:14px">Developers</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#how" style="color:#46564f;text-decoration:none">Install</a><a href="#" style="color:#46564f;text-decoration:none">API reference</a><a href="#" style="color:#46564f;text-decoration:none">Self-hosting</a><a href="#" style="color:#46564f;text-decoration:none">Status</a></div></div>
     <div><div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8A968F;margin-bottom:14px">Company</div><div style="display:flex;flex-direction:column;gap:9px;font-size:14px"><a href="#" style="color:#46564f;text-decoration:none">About</a><a href="#" style="color:#46564f;text-decoration:none">Security</a><a href="#" style="color:#46564f;text-decoration:none">Privacy</a><a href="#" style="color:#46564f;text-decoration:none">Contact</a></div></div>
   </div>
