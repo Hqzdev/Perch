@@ -8,6 +8,7 @@ use anyhow::Context;
 use axum::Router;
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
+use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::application::sites::SiteService;
@@ -34,6 +35,7 @@ async fn main() -> anyhow::Result<()> {
             "/v1/widget/config",
             axum::routing::get(widget_config_handler),
         )
+        .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

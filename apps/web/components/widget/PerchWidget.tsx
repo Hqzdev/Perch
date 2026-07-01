@@ -2,6 +2,8 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
+import { PerchApiClient, WidgetConfig } from "./perchApi";
+
 type MessageRole = "assistant" | "visitor";
 
 type Source = {
@@ -74,6 +76,9 @@ const prompts = [
   "What plan should I start with?"
 ];
 
+const gatewayUrl = process.env.NEXT_PUBLIC_PERCH_GATEWAY_URL ?? "";
+const widgetKey = process.env.NEXT_PUBLIC_PERCH_WIDGET_KEY ?? "";
+
 class PerchAnswerService {
   answer(question: string): Message {
     const normalizedQuestion = question.toLowerCase();
@@ -102,11 +107,46 @@ class PerchAnswerService {
 
 export function PerchWidget() {
   const answerService = useMemo(() => new PerchAnswerService(), []);
+  const apiClient = useMemo(() => new PerchApiClient(gatewayUrl, widgetKey), []);
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [configStatus, setConfigStatus] = useState<"demo" | "loading" | "live" | "error">("demo");
+  const [widgetConfig, setWidgetConfig] = useState<WidgetConfig | null>(null);
   const [messages, setMessages] = useState<Message[]>(starterMessages);
   const messagesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!apiClient.configured()) {
+      setConfigStatus("demo");
+      return;
+    }
+
+    let active = true;
+    setConfigStatus("loading");
+
+    apiClient
+      .widgetConfig()
+      .then((config) => {
+        if (!active) {
+          return;
+        }
+
+        setWidgetConfig(config);
+        setConfigStatus("live");
+      })
+      .catch(() => {
+        if (!active) {
+          return;
+        }
+
+        setConfigStatus("error");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [apiClient]);
 
   useEffect(() => {
     messagesRef.current?.scrollTo({
@@ -147,6 +187,16 @@ export function PerchWidget() {
     sendQuestion(input);
   }
 
+  const title = widgetConfig?.site_name ? `Ask ${widgetConfig.site_name}` : "Ask this site";
+  const subtitle = configStatus === "live" ? "Connected to Gateway" : "Grounded demo mode";
+  const statusLabel = configStatus === "loading"
+    ? "connecting"
+    : configStatus === "live"
+      ? "live config"
+      : configStatus === "error"
+        ? "demo fallback"
+        : "demo";
+
   return (
     <div className="perch-widget" data-open={isOpen}>
       {isOpen ? (
@@ -159,9 +209,10 @@ export function PerchWidget() {
               </svg>
             </span>
             <div>
-              <h2>Ask this site</h2>
-              <p>Grounded in indexed pages</p>
+              <h2>{title}</h2>
+              <p>{subtitle}</p>
             </div>
+            <span className="perch-widget-status" data-status={configStatus}>{statusLabel}</span>
             <button className="perch-widget-icon-button" type="button" aria-label="Close assistant" onClick={() => setIsOpen(false)}>
               ×
             </button>

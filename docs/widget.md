@@ -8,6 +8,15 @@ The Perch widget should be framework-free and embeddable on ordinary websites.
 <script src="https://cdn.perch.ai/widget.js" data-perch-key="pk_live_..."></script>
 ```
 
+The widget configuration is resolved through:
+
+```txt
+GET /v1/widget/config?key=pk_live_...
+Origin: https://customer-site.example
+```
+
+The browser origin must match the site origin registered in Gateway.
+
 ## Requirements
 
 - no React dependency on the customer site

@@ -189,3 +189,10 @@ Fetch widget config:
 curl 'http://localhost:18080/v1/widget/config?key=pk_dev_...' \
   -H 'origin: https://docs.acme.example'
 ```
+
+Connect the Next.js demo widget to Gateway:
+
+```sh
+NEXT_PUBLIC_PERCH_GATEWAY_URL=http://localhost:18080
+NEXT_PUBLIC_PERCH_WIDGET_KEY=pk_dev_...
+```

@@ -197,6 +197,31 @@ body > div section [style*="border-radius:18px"]:hover {
   font-size: 12px;
 }
 
+.perch-widget-status {
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #c8d8ce;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.perch-widget-status[data-status="live"] {
+  border-color: rgba(18, 183, 106, 0.44);
+  background: rgba(18, 183, 106, 0.14);
+  color: #9be7c0;
+}
+
+.perch-widget-status[data-status="error"] {
+  border-color: rgba(253, 176, 34, 0.42);
+  background: rgba(253, 176, 34, 0.14);
+  color: #ffd184;
+}
+
 .perch-widget-mark {
   width: 32px;
   height: 32px;
