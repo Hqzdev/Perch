@@ -36,6 +36,7 @@
     "components/site/**/*.tsx",
     "components/landing/**/*.tsx",
     "components/product/**/*.tsx",
+    "components/widget/**/*.tsx",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [

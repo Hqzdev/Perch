@@ -5,3 +5,397 @@ html {
 body {
   margin: 0;
 }
+
+@keyframes perch-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes perch-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes perch-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes perch-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes perch-pulse-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(18, 183, 106, 0.28);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(18, 183, 106, 0);
+  }
+}
+
+@keyframes perch-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+body > div > nav {
+  animation: perch-reveal-up 560ms ease both;
+}
+
+body > div > section,
+body > div > footer {
+  animation: perch-reveal-up 700ms ease both;
+}
+
+body > div a,
+body > div button {
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+body > div a:hover,
+body > div button:hover {
+  transform: translateY(-2px);
+}
+
+body > div section [style*="border-radius:16px"],
+body > div section [style*="border-radius:18px"],
+body > div section [style*="border-radius:24px"] {
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+body > div section [style*="border-radius:16px"]:hover,
+body > div section [style*="border-radius:18px"]:hover {
+  transform: translateY(-3px);
+}
+
+.perch-widget {
+  position: fixed;
+  right: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.perch-widget-panel {
+  width: min(390px, calc(100vw - 28px));
+  height: min(560px, calc(100vh - 120px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(231, 228, 216, 0.92);
+  border-radius: 22px;
+  background: #fcfbf7;
+  box-shadow: 0 30px 70px -24px rgba(20, 36, 29, 0.46), 0 12px 28px -18px rgba(20, 36, 29, 0.4);
+  animation: perch-panel-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.perch-widget-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+  background: #14241d;
+  color: #ffffff;
+}
+
+.perch-widget-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.perch-widget-header p {
+  margin: 2px 0 0;
+  color: #9cb3a8;
+  font-size: 12px;
+}
+
+.perch-widget-mark {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #12b76a;
+  color: #ffffff;
+  box-shadow: 0 2px 0 #0e9e5b;
+  animation: perch-pulse-ring 2.8s ease-in-out infinite;
+}
+
+.perch-widget-icon-button {
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.perch-widget-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  overflow-y: auto;
+  padding: 15px;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f6f4ec 100%);
+}
+
+.perch-message {
+  max-width: 88%;
+  animation: perch-message-in 220ms ease both;
+}
+
+.perch-message p {
+  margin: 0;
+  border: 1px solid #efede3;
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: #ffffff;
+  color: #14241d;
+  font-size: 13.5px;
+  line-height: 1.55;
+  box-shadow: 0 14px 30px -26px rgba(20, 36, 29, 0.4);
+}
+
+.perch-message[data-role="visitor"] {
+  align-self: flex-end;
+}
+
+.perch-message[data-role="visitor"] p {
+  border-color: #2e90fa;
+  border-radius: 14px 14px 4px 14px;
+  background: #2e90fa;
+  color: #ffffff;
+}
+
+.perch-message[data-role="assistant"] p {
+  border-radius: 14px 14px 14px 4px;
+}
+
+.perch-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.perch-sources span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid rgba(18, 183, 106, 0.3);
+  border-radius: 9px;
+  padding: 7px 9px;
+  background: rgba(18, 183, 106, 0.1);
+  color: #0e9e5b;
+  font-size: 11.5px;
+}
+
+.perch-sources strong {
+  color: #14241d;
+  font-weight: 700;
+}
+
+.perch-thinking {
+  width: fit-content;
+  display: flex;
+  gap: 5px;
+  border: 1px solid #efede3;
+  border-radius: 14px;
+  padding: 11px 13px;
+  background: #ffffff;
+}
+
+.perch-thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #12b76a;
+  animation: perch-dot 1.1s ease-in-out infinite;
+}
+
+.perch-thinking span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.perch-thinking span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.perch-prompts {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 15px;
+  border-top: 1px solid #efede3;
+  background: #ffffff;
+}
+
+.perch-prompts button {
+  flex: 0 0 auto;
+  border: 1px solid #d9eadf;
+  border-radius: 999px;
+  padding: 8px 10px;
+  background: #eaf7ef;
+  color: #0e9e5b;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.perch-widget-form {
+  display: flex;
+  gap: 9px;
+  padding: 12px;
+  border-top: 1px solid #efede3;
+  background: #ffffff;
+}
+
+.perch-widget-form input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #dce3dc;
+  border-radius: 12px;
+  padding: 0 12px;
+  color: #14241d;
+  font: inherit;
+  font-size: 13.5px;
+  outline: none;
+}
+
+.perch-widget-form input:focus {
+  border-color: #12b76a;
+  box-shadow: 0 0 0 3px rgba(18, 183, 106, 0.14);
+}
+
+.perch-widget-form button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: #12b76a;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0e9e5b;
+}
+
+.perch-widget-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.perch-widget-launcher {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 18px 13px 15px;
+  background: #14241d;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 650;
+  box-shadow: 0 12px 30px -8px rgba(20, 36, 29, 0.55);
+  animation: perch-float 4s ease-in-out infinite;
+}
+
+.perch-widget[data-open="true"] .perch-widget-launcher {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+}
+
+@supports (animation-timeline: view()) {
+  body > div > section,
+  body > div > footer {
+    animation-timeline: view();
+    animation-range: entry 0% cover 24%;
+  }
+}
+
+@media (max-width: 640px) {
+  .perch-widget {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .perch-widget-panel {
+    width: 100%;
+    height: min(560px, calc(100vh - 92px));
+  }
+
+  .perch-widget-launcher {
+    align-self: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
