@@ -8,12 +8,13 @@ use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
     CreateSiteRequest, DependencyReadiness, DependencyStatus, ErrorBody, ErrorResponse,
-    HealthResponse, ReadinessResponse, ServiceStatus, SiteResponse, WidgetConfigResponse,
-    WidgetFeatures, WidgetTheme,
+    HealthResponse, ReadinessResponse, ServiceStatus, SiteResponse, WidgetChatRequest,
+    WidgetChatResponse, WidgetCitation, WidgetConfigResponse, WidgetFeatures, WidgetTheme,
 };
 use serde::Deserialize;
 
 use crate::application::sites::{SiteService, SiteServiceError};
+use crate::domain::messages::{AssistantAnswer, VisitorMessage};
 use crate::domain::sites::{NewSite, Site};
 
 #[derive(Clone)]
@@ -160,6 +161,25 @@ pub async fn widget_config_handler(
     }))
 }
 
+pub async fn widget_chat_handler(
+    State(state): State<HttpState>,
+    headers: HeaderMap,
+    Json(request): Json<WidgetChatRequest>,
+) -> Result<Json<WidgetChatResponse>, ApiError> {
+    let origin = headers.get("origin").and_then(|value| value.to_str().ok());
+    let answer = state
+        .site_service
+        .answer_widget_message(
+            &request.public_key,
+            origin,
+            VisitorMessage::new(request.session_id, request.message),
+        )
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(widget_chat_response(answer)))
+}
+
 fn site_response(site: Site) -> SiteResponse {
     SiteResponse {
         id: site.id,
@@ -170,12 +190,33 @@ fn site_response(site: Site) -> SiteResponse {
     }
 }
 
+fn widget_chat_response(answer: AssistantAnswer) -> WidgetChatResponse {
+    WidgetChatResponse {
+        conversation_id: answer.conversation_id,
+        message_id: answer.message_id,
+        answer: answer.content,
+        citations: answer
+            .citations
+            .into_iter()
+            .map(|citation| WidgetCitation {
+                title: citation.title,
+                url: citation.url,
+            })
+            .collect(),
+    }
+}
+
 fn api_error_from_site_error(error: SiteServiceError) -> ApiError {
     match error {
         SiteServiceError::InvalidSite => ApiError::new(
             StatusCode::BAD_REQUEST,
             "invalid_site",
             "The site payload is invalid.",
+        ),
+        SiteServiceError::InvalidMessage => ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_message",
+            "The message payload is invalid.",
         ),
         SiteServiceError::MissingOrigin => ApiError::new(
             StatusCode::BAD_REQUEST,

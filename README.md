@@ -70,6 +70,58 @@ Inside each Rust service, the intended structure is clean/hexagonal:
 
 See [docs/architecture.md](docs/architecture.md) for the full boundary rules.
 
+### Runtime Flow
+
+```mermaid
+flowchart LR
+  Visitor["Website visitor"] --> Widget["Embedded Perch widget"]
+  Widget --> Gateway["gateway\npublic API, widget config, origin checks"]
+  Gateway --> Postgres["Postgres\norganizations, sites, pages, conversations, messages"]
+  Gateway --> Retrieval["retrieval\nquestion answering"]
+  Gateway --> Indexer["indexer\ncrawl job control"]
+  Indexer --> Postgres
+  Indexer --> Redis["Redis\njobs and operational state"]
+  Indexer --> Qdrant["Qdrant\nvector index"]
+  Retrieval --> Postgres
+  Retrieval --> Qdrant
+  Retrieval --> Provider["Model provider\nembeddings and answers"]
+```
+
+Current implemented path:
+
+```txt
+Next.js demo widget
+  -> gateway /v1/widget/config
+  -> gateway /v1/widget/chat
+  -> Postgres conversations and messages
+  -> deterministic bootstrap answer
+```
+
+Next backend path:
+
+```txt
+widget question
+  -> gateway
+  -> retrieval
+  -> tenant-filtered chunks from Postgres and Qdrant
+  -> cited answer
+  -> widget
+```
+
+### Local Infra
+
+```mermaid
+flowchart TB
+  Compose["docker compose"] --> Pg["postgres:16-alpine\nlocalhost:5433"]
+  Compose --> Rd["redis:7-alpine\nlocalhost:6380"]
+  Compose --> Qd["qdrant/qdrant\nlocalhost:6335"]
+  Compose --> Migrate["migrate\nSQL from infra/database/migrations"]
+  Migrate --> Pg
+  Pg --> GatewayReady["gateway /ready"]
+  Pg --> IndexerReady["indexer /ready"]
+  Pg --> RetrievalReady["retrieval /ready"]
+```
+
 ## Web App
 
 The current implemented app is the Perch website in `apps/web`.

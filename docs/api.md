@@ -78,7 +78,7 @@ The request must include an `Origin` header matching the registered site origin.
 }
 ```
 
-### Stream Answer
+### Answer Message
 
 ```txt
 POST /v1/widget/chat
@@ -89,24 +89,29 @@ Request:
 
 ```json
 {
-  "publicKey": "pk_live_...",
-  "sessionId": "session_...",
+  "public_key": "pk_live_...",
+  "session_id": "session_...",
   "message": "How do I reset my API key?"
 }
 ```
 
-Response uses server-sent events:
+Returns:
 
-```txt
-event: token
-data: {"text":"Open Settings"}
-
-event: citation
-data: {"title":"API Keys","url":"https://acme.example/docs/api-keys"}
-
-event: done
-data: {}
+```json
+{
+  "conversation_id": "018f0000-0000-7000-9000-000000000003",
+  "message_id": "018f0000-0000-7000-9000-000000000004",
+  "answer": "Perch received your question for Acme Docs and stored it for retrieval...",
+  "citations": [
+    {
+      "title": "Acme Docs",
+      "url": "https://docs.acme.example"
+    }
+  ]
+}
 ```
+
+This is a bootstrap JSON endpoint. Streaming and retrieval-backed answers are the next backend stage.
 
 ## Dashboard
 

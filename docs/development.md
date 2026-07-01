@@ -190,6 +190,15 @@ curl 'http://localhost:18080/v1/widget/config?key=pk_dev_...' \
   -H 'origin: https://docs.acme.example'
 ```
 
+Send a widget chat message:
+
+```sh
+curl -X POST http://localhost:18080/v1/widget/chat \
+  -H 'content-type: application/json' \
+  -H 'origin: https://docs.acme.example' \
+  -d '{"public_key":"pk_dev_...","session_id":"local-session","message":"How do I install Perch?"}'
+```
+
 Connect the Next.js demo widget to Gateway:
 
 ```sh

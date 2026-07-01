@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-import { PerchApiClient, WidgetConfig } from "./perchApi";
+import { PerchApiClient, WidgetChatResponse, WidgetConfig } from "./perchApi";
 
 type MessageRole = "assistant" | "visitor";
 
@@ -114,6 +114,7 @@ export function PerchWidget() {
   const [configStatus, setConfigStatus] = useState<"demo" | "loading" | "live" | "error">("demo");
   const [widgetConfig, setWidgetConfig] = useState<WidgetConfig | null>(null);
   const [messages, setMessages] = useState<Message[]>(starterMessages);
+  const [sessionId] = useState(() => crypto.randomUUID());
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -155,7 +156,7 @@ export function PerchWidget() {
     });
   }, [messages, isThinking]);
 
-  function sendQuestion(question: string) {
+  async function sendQuestion(question: string) {
     const trimmedQuestion = question.trim();
 
     if (trimmedQuestion.length === 0 || isThinking) {
@@ -173,13 +174,32 @@ export function PerchWidget() {
     ]);
     setIsThinking(true);
 
-    window.setTimeout(() => {
+    if (configStatus !== "live") {
+      window.setTimeout(() => {
+        setMessages((currentMessages) => [
+          ...currentMessages,
+          answerService.answer(trimmedQuestion)
+        ]);
+        setIsThinking(false);
+      }, 720);
+      return;
+    }
+
+    try {
+      const answer = await apiClient.widgetChat(sessionId, trimmedQuestion);
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        messageFromGatewayAnswer(answer)
+      ]);
+    } catch {
       setMessages((currentMessages) => [
         ...currentMessages,
         answerService.answer(trimmedQuestion)
       ]);
+      setConfigStatus("error");
+    } finally {
       setIsThinking(false);
-    }, 720);
+    }
   }
 
   function submitQuestion(event: FormEvent<HTMLFormElement>) {
@@ -278,4 +298,16 @@ export function PerchWidget() {
       </button>
     </div>
   );
+}
+
+function messageFromGatewayAnswer(answer: WidgetChatResponse): Message {
+  return {
+    id: answer.message_id,
+    role: "assistant",
+    text: answer.answer,
+    sources: answer.citations.map((citation) => ({
+      label: citation.title,
+      path: citation.url
+    }))
+  };
 }

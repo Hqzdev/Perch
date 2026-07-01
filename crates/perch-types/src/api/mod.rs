@@ -60,6 +60,27 @@ pub struct WidgetConfigResponse {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetChatRequest {
+    pub public_key: String,
+    pub session_id: Option<String>,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetChatResponse {
+    pub conversation_id: Uuid,
+    pub message_id: Uuid,
+    pub answer: String,
+    pub citations: Vec<WidgetCitation>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetCitation {
+    pub title: String,
+    pub url: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WidgetTheme {
     pub accent_color: String,
     pub placement: String,

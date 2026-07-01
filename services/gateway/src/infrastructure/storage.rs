@@ -3,6 +3,7 @@ use sqlx::Row;
 use thiserror::Error;
 use uuid::Uuid;
 
+use crate::domain::messages::{AssistantAnswer, VisitorMessage};
 use crate::domain::sites::{NewSite, Site};
 
 #[derive(Debug, Clone)]
@@ -14,6 +15,8 @@ pub struct SiteRepository {
 pub enum SiteRepositoryError {
     #[error("site already exists")]
     Conflict,
+    #[error("payload serialization failed: {0}")]
+    Serialization(String),
     #[error("database query failed: {0}")]
     Query(#[from] sqlx::Error),
 }
@@ -72,6 +75,55 @@ impl SiteRepository {
         .await?;
 
         Ok(row.map(Self::site_from_row))
+    }
+
+    pub async fn record_widget_exchange(
+        &self,
+        site_id: Uuid,
+        message: VisitorMessage,
+        answer: AssistantAnswer,
+    ) -> Result<AssistantAnswer, SiteRepositoryError> {
+        let mut transaction = self.database.pool().begin().await?;
+        let conversation_id = Uuid::new_v4();
+        let visitor_message_id = Uuid::new_v4();
+        let assistant_message_id = Uuid::new_v4();
+        let citations = serde_json::to_value(&answer.citations)
+            .map_err(|error| SiteRepositoryError::Serialization(error.to_string()))?;
+
+        sqlx::query("insert into conversations (id, site_id, visitor_id) values ($1, $2, $3)")
+            .bind(conversation_id)
+            .bind(site_id)
+            .bind(&message.session_id)
+            .execute(&mut *transaction)
+            .await?;
+
+        sqlx::query(
+            "insert into messages (id, conversation_id, role, content) values ($1, $2, 'visitor', $3)",
+        )
+        .bind(visitor_message_id)
+        .bind(conversation_id)
+        .bind(&message.content)
+        .execute(&mut *transaction)
+        .await?;
+
+        sqlx::query(
+            "insert into messages (id, conversation_id, role, content, citations) values ($1, $2, 'assistant', $3, $4)",
+        )
+        .bind(assistant_message_id)
+        .bind(conversation_id)
+        .bind(&answer.content)
+        .bind(citations)
+        .execute(&mut *transaction)
+        .await?;
+
+        transaction.commit().await?;
+
+        Ok(AssistantAnswer {
+            conversation_id,
+            message_id: assistant_message_id,
+            content: answer.content,
+            citations: answer.citations,
+        })
     }
 
     fn site_from_row(row: sqlx::postgres::PgRow) -> Site {

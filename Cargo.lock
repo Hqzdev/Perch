@@ -1006,6 +1006,7 @@ dependencies = [
  "perch-storage",
  "perch-types",
  "serde",
+ "serde_json",
  "sqlx",
  "thiserror",
  "tokio",

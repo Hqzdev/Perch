@@ -10,6 +10,16 @@ export type WidgetConfig = {
   };
 };
 
+export type WidgetChatResponse = {
+  conversation_id: string;
+  message_id: string;
+  answer: string;
+  citations: Array<{
+    title: string;
+    url: string;
+  }>;
+};
+
 export class PerchApiClient {
   private readonly gatewayUrl: string;
   private readonly widgetKey: string;
@@ -31,6 +41,27 @@ export class PerchApiClient {
       headers: {
         accept: "application/json"
       }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gateway returned ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async widgetChat(sessionId: string, message: string): Promise<WidgetChatResponse> {
+    const response = await fetch(new URL("/v1/widget/chat", this.gatewayUrl), {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        public_key: this.widgetKey,
+        session_id: sessionId,
+        message
+      })
     });
 
     if (!response.ok) {

@@ -14,7 +14,8 @@ use tower_http::trace::TraceLayer;
 use crate::application::sites::SiteService;
 use crate::infrastructure::storage::SiteRepository;
 use crate::interfaces::http::{
-    create_site_handler, health_handler, readiness_handler, widget_config_handler, HttpState,
+    create_site_handler, health_handler, readiness_handler, widget_chat_handler,
+    widget_config_handler, HttpState,
 };
 
 #[tokio::main]
@@ -35,6 +36,7 @@ async fn main() -> anyhow::Result<()> {
             "/v1/widget/config",
             axum::routing::get(widget_config_handler),
         )
+        .route("/v1/widget/chat", axum::routing::post(widget_chat_handler))
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
         .with_state(state);
