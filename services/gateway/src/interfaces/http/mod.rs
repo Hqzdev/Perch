@@ -1,19 +1,71 @@
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{
+    extract::{Query, State},
+    http::{HeaderMap, StatusCode},
+    response::{IntoResponse, Response},
+    Json,
+};
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
-    DependencyReadiness, DependencyStatus, HealthResponse, ReadinessResponse, ServiceStatus,
+    CreateSiteRequest, DependencyReadiness, DependencyStatus, ErrorBody, ErrorResponse,
+    HealthResponse, ReadinessResponse, ServiceStatus, SiteResponse, WidgetConfigResponse,
+    WidgetFeatures, WidgetTheme,
 };
+use serde::Deserialize;
+
+use crate::application::sites::{SiteService, SiteServiceError};
+use crate::domain::sites::{NewSite, Site};
 
 #[derive(Clone)]
 pub struct HttpState {
     settings: RuntimeSettings,
     database: Database,
+    site_service: SiteService,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct WidgetConfigQuery {
+    key: String,
+}
+
+pub struct ApiError {
+    status: StatusCode,
+    code: &'static str,
+    message: &'static str,
 }
 
 impl HttpState {
-    pub fn new(settings: RuntimeSettings, database: Database) -> Self {
-        Self { settings, database }
+    pub fn new(settings: RuntimeSettings, database: Database, site_service: SiteService) -> Self {
+        Self {
+            settings,
+            database,
+            site_service,
+        }
+    }
+}
+
+impl ApiError {
+    fn new(status: StatusCode, code: &'static str, message: &'static str) -> Self {
+        Self {
+            status,
+            code,
+            message,
+        }
+    }
+}
+
+impl IntoResponse for ApiError {
+    fn into_response(self) -> Response {
+        (
+            self.status,
+            Json(ErrorResponse {
+                error: ErrorBody {
+                    code: self.code.to_string(),
+                    message: self.message.to_string(),
+                },
+            }),
+        )
+            .into_response()
     }
 }
 
@@ -64,4 +116,86 @@ pub async fn readiness_handler(
             ],
         }),
     )
+}
+
+pub async fn create_site_handler(
+    State(state): State<HttpState>,
+    Json(request): Json<CreateSiteRequest>,
+) -> Result<(StatusCode, Json<SiteResponse>), ApiError> {
+    let site = state
+        .site_service
+        .create_site(NewSite::new(
+            request.organization_name,
+            request.site_name,
+            request.origin,
+        ))
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok((StatusCode::CREATED, Json(site_response(site))))
+}
+
+pub async fn widget_config_handler(
+    State(state): State<HttpState>,
+    Query(query): Query<WidgetConfigQuery>,
+    headers: HeaderMap,
+) -> Result<Json<WidgetConfigResponse>, ApiError> {
+    let origin = headers.get("origin").and_then(|value| value.to_str().ok());
+    let site = state
+        .site_service
+        .resolve_widget_site(&query.key, origin)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(WidgetConfigResponse {
+        site_name: site.name,
+        theme: WidgetTheme {
+            accent_color: "#12b76a".to_string(),
+            placement: "bottom-right".to_string(),
+        },
+        features: WidgetFeatures {
+            citations: true,
+            streaming: true,
+        },
+    }))
+}
+
+fn site_response(site: Site) -> SiteResponse {
+    SiteResponse {
+        id: site.id,
+        organization_id: site.organization_id,
+        name: site.name,
+        origin: site.origin,
+        script_key: site.script_key,
+    }
+}
+
+fn api_error_from_site_error(error: SiteServiceError) -> ApiError {
+    match error {
+        SiteServiceError::InvalidSite => ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_site",
+            "The site payload is invalid.",
+        ),
+        SiteServiceError::MissingOrigin => ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "missing_origin",
+            "The Origin header is required.",
+        ),
+        SiteServiceError::OriginNotAllowed => ApiError::new(
+            StatusCode::FORBIDDEN,
+            "domain_not_allowed",
+            "This widget key is not allowed on the current domain.",
+        ),
+        SiteServiceError::NotFound => ApiError::new(
+            StatusCode::NOT_FOUND,
+            "site_not_found",
+            "The widget site was not found.",
+        ),
+        SiteServiceError::Storage(_) => ApiError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "storage_error",
+            "The request could not be completed.",
+        ),
+    }
 }

@@ -10,7 +10,11 @@ use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use tower_http::trace::TraceLayer;
 
-use crate::interfaces::http::{health_handler, readiness_handler, HttpState};
+use crate::application::sites::SiteService;
+use crate::infrastructure::storage::SiteRepository;
+use crate::interfaces::http::{
+    create_site_handler, health_handler, readiness_handler, widget_config_handler, HttpState,
+};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -20,10 +24,16 @@ async fn main() -> anyhow::Result<()> {
 
     let settings = RuntimeSettings::from_env("gateway", 8080)?;
     let database = Database::new(&settings.data_stores.database_url)?;
-    let state = HttpState::new(settings.clone(), database);
+    let site_service = SiteService::new(SiteRepository::new(database.clone()));
+    let state = HttpState::new(settings.clone(), database, site_service);
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))
         .route("/ready", axum::routing::get(readiness_handler))
+        .route("/v1/sites", axum::routing::post(create_site_handler))
+        .route(
+            "/v1/widget/config",
+            axum::routing::get(widget_config_handler),
+        )
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

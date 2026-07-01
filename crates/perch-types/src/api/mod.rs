@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HealthResponse {
@@ -33,4 +34,50 @@ pub enum DependencyStatus {
     Configured,
     Ok,
     Unavailable,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CreateSiteRequest {
+    pub organization_name: String,
+    pub site_name: String,
+    pub origin: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SiteResponse {
+    pub id: Uuid,
+    pub organization_id: Uuid,
+    pub name: String,
+    pub origin: String,
+    pub script_key: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetConfigResponse {
+    pub site_name: String,
+    pub theme: WidgetTheme,
+    pub features: WidgetFeatures,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetTheme {
+    pub accent_color: String,
+    pub placement: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WidgetFeatures {
+    pub citations: bool,
+    pub streaming: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ErrorResponse {
+    pub error: ErrorBody,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ErrorBody {
+    pub code: String,
+    pub message: String,
 }

@@ -67,6 +67,17 @@ Returns:
 
 The server resolves tenant and site from the public key. The browser must not provide trusted tenant IDs.
 
+The request must include an `Origin` header matching the registered site origin. A mismatched origin returns:
+
+```json
+{
+  "error": {
+    "code": "domain_not_allowed",
+    "message": "This widget key is not allowed on the current domain."
+  }
+}
+```
+
 ### Stream Answer
 
 ```txt
@@ -101,9 +112,34 @@ data: {}
 
 Dashboard routes require authenticated sessions.
 
-Planned routes:
+Implemented bootstrap routes:
 
 - `POST /v1/sites`
+
+Create site request:
+
+```json
+{
+  "organization_name": "Acme",
+  "site_name": "Acme Docs",
+  "origin": "https://docs.acme.example"
+}
+```
+
+Create site response:
+
+```json
+{
+  "id": "018f0000-0000-7000-9000-000000000001",
+  "organization_id": "018f0000-0000-7000-9000-000000000002",
+  "name": "Acme Docs",
+  "origin": "https://docs.acme.example",
+  "script_key": "pk_dev_..."
+}
+```
+
+Planned routes:
+
 - `GET /v1/sites`
 - `GET /v1/sites/:siteId`
 - `POST /v1/sites/:siteId/crawl-jobs`

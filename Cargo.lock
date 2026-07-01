@@ -1005,10 +1005,14 @@ dependencies = [
  "perch-config",
  "perch-storage",
  "perch-types",
+ "serde",
+ "sqlx",
+ "thiserror",
  "tokio",
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

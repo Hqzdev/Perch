@@ -172,3 +172,20 @@ Before merging backend work:
 - run tests
 - document new environment variables
 - update architecture docs when boundaries change
+
+## Gateway Bootstrap
+
+Create a local site:
+
+```sh
+curl -X POST http://localhost:18080/v1/sites \
+  -H 'content-type: application/json' \
+  -d '{"organization_name":"Acme","site_name":"Acme Docs","origin":"https://docs.acme.example"}'
+```
+
+Fetch widget config:
+
+```sh
+curl 'http://localhost:18080/v1/widget/config?key=pk_dev_...' \
+  -H 'origin: https://docs.acme.example'
+```
