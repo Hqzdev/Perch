@@ -9,6 +9,7 @@ repository.workspace = true
 anyhow.workspace = true
 axum.workspace = true
 perch-config.workspace = true
+perch-storage.workspace = true
 perch-types.workspace = true
 tokio.workspace = true
 tower-http.workspace = true

@@ -31,12 +31,14 @@ Returns:
   "status": "ok",
   "environment": "development",
   "dependencies": [
-    { "name": "postgres", "status": "configured" },
+    { "name": "postgres", "status": "ok" },
     { "name": "redis", "status": "configured" },
     { "name": "qdrant", "status": "configured" }
   ]
 }
 ```
+
+When Postgres is unavailable, `/ready` returns HTTP 503 and marks the service as `unavailable`.
 
 ## Public Widget
 

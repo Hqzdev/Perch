@@ -24,10 +24,13 @@ pub struct DependencyReadiness {
 #[serde(rename_all = "snake_case")]
 pub enum ServiceStatus {
     Ok,
+    Unavailable,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DependencyStatus {
     Configured,
+    Ok,
+    Unavailable,
 }

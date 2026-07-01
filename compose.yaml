@@ -37,6 +37,18 @@ services:
     volumes:
       - qdrant-data:/qdrant/storage
 
+  migrate:
+    image: postgres:16-alpine
+    environment:
+      PGPASSWORD: perch
+    volumes:
+      - ./infra/database/migrations:/migrations:ro
+    command: >
+      sh -c "for file in /migrations/*.sql; do psql postgres://perch:perch@postgres:5432/perch -v ON_ERROR_STOP=1 -f $$file; done"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   gateway:
     build:
       context: .
@@ -50,8 +62,8 @@ services:
     ports:
       - "${PERCH_GATEWAY_PORT:-18080}:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
       qdrant:
@@ -75,8 +87,8 @@ services:
     ports:
       - "${PERCH_INDEXER_PORT:-18081}:8081"
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
       qdrant:
@@ -100,8 +112,8 @@ services:
     ports:
       - "${PERCH_RETRIEVAL_PORT:-18082}:8082"
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
       qdrant:

@@ -81,6 +81,8 @@ indexer    http://localhost:18081/ready
 retrieval  http://localhost:18082/ready
 ```
 
+`/ready` returns HTTP 503 when Postgres cannot be reached. Redis and Qdrant are still configuration-only checks until their adapters exist.
+
 ## Local Infrastructure
 
 Start the Tier A local stack:
@@ -88,6 +90,8 @@ Start the Tier A local stack:
 ```sh
 docker compose up --build
 ```
+
+Postgres migrations run through the `migrate` service before backend services start.
 
 Run in the background:
 
@@ -99,6 +103,12 @@ Check service state:
 
 ```sh
 docker compose ps
+```
+
+Run migrations only:
+
+```sh
+docker compose up migrate
 ```
 
 Stop the stack:
@@ -127,6 +137,12 @@ Local container service URLs use Docker network hostnames:
 postgres://perch:perch@postgres:5432/perch
 redis://redis:6379
 http://qdrant:6333
+```
+
+Database migrations live in:
+
+```txt
+infra/database/migrations
 ```
 
 ## Environment

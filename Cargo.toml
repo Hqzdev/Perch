@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "crates/perch-config",
+  "crates/perch-storage",
   "crates/perch-types",
   "crates/rag-core",
   "services/gateway",
@@ -18,10 +19,12 @@ repository = "https://github.com/Hqzdev/Perch"
 anyhow = "1.0.98"
 axum = "0.8.4"
 perch-config = { path = "crates/perch-config" }
+perch-storage = { path = "crates/perch-storage" }
 perch-types = { path = "crates/perch-types" }
 rag-core = { path = "crates/rag-core" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json"] }
 thiserror = "2.0.12"
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread", "signal", "net"] }
 tower-http = { version = "0.6.6", features = ["trace", "cors"] }

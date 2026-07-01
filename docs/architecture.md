@@ -148,6 +148,16 @@ Shared contracts:
 
 Shared configuration loading only when duplication becomes real.
 
+### perch-storage
+
+Shared storage adapters:
+
+- Postgres pool ownership
+- database readiness checks
+- shared repository primitives when duplication becomes real
+
+Services may depend on `perch-storage`; domain modules must not.
+
 ## Data Ownership
 
 Postgres is the source of truth for tenants, sites, pages, jobs, widget settings, usage, and metadata.
