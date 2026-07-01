@@ -6,10 +6,10 @@ mod interfaces;
 
 use anyhow::Context;
 use axum::Router;
-use perch_config::ServiceSettings;
+use perch_config::RuntimeSettings;
 use tower_http::trace::TraceLayer;
 
-use crate::interfaces::http::health_handler;
+use crate::interfaces::http::{health_handler, readiness_handler};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -17,17 +17,18 @@ async fn main() -> anyhow::Result<()> {
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
-    let settings = ServiceSettings::from_env("indexer", 8081)?;
+    let settings = RuntimeSettings::from_env("indexer", 8081)?;
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))
+        .route("/ready", axum::routing::get(readiness_handler))
         .layer(TraceLayer::new_for_http())
         .with_state(settings.clone());
 
-    let listener = tokio::net::TcpListener::bind(settings.bind_addr)
+    let listener = tokio::net::TcpListener::bind(settings.service.bind_addr)
         .await
-        .with_context(|| format!("failed to bind {}", settings.bind_addr))?;
+        .with_context(|| format!("failed to bind {}", settings.service.bind_addr))?;
 
-    tracing::info!(service = settings.name, bind_addr = %settings.bind_addr, "service started");
+    tracing::info!(service = settings.service.name, bind_addr = %settings.service.bind_addr, "service started");
     axum::serve(listener, app).await?;
 
     Ok(())

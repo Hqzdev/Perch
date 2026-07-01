@@ -56,12 +56,29 @@ INDEXER_BIND_ADDR=127.0.0.1:8081
 RETRIEVAL_BIND_ADDR=127.0.0.1:8082
 ```
 
+Shared backend environment variables:
+
+```sh
+PERCH_ENV=development
+PERCH_DATABASE_URL=postgres://perch:perch@127.0.0.1:5433/perch
+PERCH_REDIS_URL=redis://127.0.0.1:6380
+PERCH_QDRANT_URL=http://127.0.0.1:6335
+```
+
 Health endpoints:
 
 ```txt
-http://localhost:18080/health
-http://localhost:18081/health
-http://localhost:18082/health
+gateway    http://localhost:18080/health
+indexer    http://localhost:18081/health
+retrieval  http://localhost:18082/health
+```
+
+Readiness endpoints expose service config readiness:
+
+```txt
+gateway    http://localhost:18080/ready
+indexer    http://localhost:18081/ready
+retrieval  http://localhost:18082/ready
 ```
 
 ## Local Infrastructure
@@ -96,6 +113,9 @@ The local stack exposes:
 gateway    http://localhost:18080/health
 indexer    http://localhost:18081/health
 retrieval  http://localhost:18082/health
+gateway    http://localhost:18080/ready
+indexer    http://localhost:18081/ready
+retrieval  http://localhost:18082/ready
 postgres   localhost:5433
 redis      localhost:6380
 qdrant     http://localhost:6335/readyz

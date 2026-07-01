@@ -2,6 +2,42 @@
 
 This document captures intended API contracts. Exact routes can change before the backend is implemented.
 
+## Service Operations
+
+All backend services expose health and readiness endpoints.
+
+```txt
+GET /health
+```
+
+Returns:
+
+```json
+{
+  "service": "gateway",
+  "status": "ok"
+}
+```
+
+```txt
+GET /ready
+```
+
+Returns:
+
+```json
+{
+  "service": "gateway",
+  "status": "ok",
+  "environment": "development",
+  "dependencies": [
+    { "name": "postgres", "status": "configured" },
+    { "name": "redis", "status": "configured" },
+    { "name": "qdrant", "status": "configured" }
+  ]
+}
+```
+
 ## Public Widget
 
 ### Get Widget Configuration
