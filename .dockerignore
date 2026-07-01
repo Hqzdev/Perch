@@ -1,0 +1,11 @@
+.git
+.github
+.next
+apps/web/.next
+apps/web/node_modules
+node_modules
+target
+*.log
+.env
+.env.local
+.DS_Store

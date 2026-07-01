@@ -1,0 +1,118 @@
+name: perch
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: perch
+      POSTGRES_USER: perch
+      POSTGRES_PASSWORD: perch
+    ports:
+      - "${PERCH_POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U perch -d perch"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${PERCH_REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.6
+    ports:
+      - "${PERCH_QDRANT_HTTP_PORT:-6335}:6333"
+      - "${PERCH_QDRANT_GRPC_PORT:-6336}:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  gateway:
+    build:
+      context: .
+      dockerfile: infra/docker/gateway.Dockerfile
+    environment:
+      GATEWAY_BIND_ADDR: 0.0.0.0:8080
+      PERCH_ENV: development
+      PERCH_DATABASE_URL: postgres://perch:perch@postgres:5432/perch
+      PERCH_REDIS_URL: redis://redis:6379
+      PERCH_QDRANT_URL: http://qdrant:6333
+    ports:
+      - "${PERCH_GATEWAY_PORT:-18080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  indexer:
+    build:
+      context: .
+      dockerfile: infra/docker/indexer.Dockerfile
+    environment:
+      INDEXER_BIND_ADDR: 0.0.0.0:8081
+      PERCH_ENV: development
+      PERCH_DATABASE_URL: postgres://perch:perch@postgres:5432/perch
+      PERCH_REDIS_URL: redis://redis:6379
+      PERCH_QDRANT_URL: http://qdrant:6333
+    ports:
+      - "${PERCH_INDEXER_PORT:-18081}:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  retrieval:
+    build:
+      context: .
+      dockerfile: infra/docker/retrieval.Dockerfile
+    environment:
+      RETRIEVAL_BIND_ADDR: 0.0.0.0:8082
+      PERCH_ENV: development
+      PERCH_DATABASE_URL: postgres://perch:perch@postgres:5432/perch
+      PERCH_REDIS_URL: redis://redis:6379
+      PERCH_QDRANT_URL: http://qdrant:6333
+    ports:
+      - "${PERCH_RETRIEVAL_PORT:-18082}:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8082/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  postgres-data:
+  redis-data:
+  qdrant-data:

@@ -103,6 +103,25 @@ Current services:
 
 Each service exposes a minimal `/health` endpoint and is ready for the first real application use cases.
 
+## Local Infrastructure
+
+Start Postgres, Redis, Qdrant, and the three Rust services:
+
+```sh
+docker compose up --build
+```
+
+Health endpoints:
+
+```txt
+http://localhost:18080/health
+http://localhost:18081/health
+http://localhost:18082/health
+http://localhost:6335/readyz
+```
+
+Gateway is exposed on `localhost:18080`, indexer on `localhost:18081`, retrieval on `localhost:18082`, Postgres on `localhost:5433`, Redis on `localhost:6380`, and Qdrant on `localhost:6335` by default to avoid colliding with common local services.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md).
