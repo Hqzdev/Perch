@@ -28,9 +28,33 @@ Build:
 npm run build
 ```
 
-## Backend
+## Rust Backend
 
-The backend directories are scaffolded, but Rust manifests are not committed yet. Add the workspace manifest and service manifests before implementing backend code.
+Check the full Rust workspace:
+
+```sh
+cargo check --workspace
+```
+
+Format Rust code:
+
+```sh
+cargo fmt --all
+```
+
+Run a service:
+
+```sh
+cargo run -p perch-gateway
+```
+
+Service bind addresses can be overridden with:
+
+```sh
+GATEWAY_BIND_ADDR=127.0.0.1:8080
+INDEXER_BIND_ADDR=127.0.0.1:8081
+RETRIEVAL_BIND_ADDR=127.0.0.1:8082
+```
 
 ## Environment
 

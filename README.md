@@ -6,7 +6,7 @@ Perch is built around one narrow promise: visitors should be able to ask a websi
 
 ## Status
 
-Perch is in early product development. The repository currently contains the web marketing app and the planned service boundaries for the Rust backend, widget, indexing pipeline, and retrieval system.
+Perch is in early product development. The repository currently contains the web marketing app, a compilable Rust workspace, shared crates, and minimal service entrypoints for the backend boundaries.
 
 Do not treat the project as production-ready yet. The current priority is a working Tier A demo: crawl one website, index pages, embed a framework-free widget, stream cited answers, and show indexing state in a dashboard.
 
@@ -86,6 +86,22 @@ Build:
 cd apps/web
 npm run build
 ```
+
+## Rust Workspace
+
+Check the backend workspace:
+
+```sh
+cargo check --workspace
+```
+
+Current services:
+
+- `perch-gateway`
+- `perch-indexer`
+- `perch-retrieval`
+
+Each service exposes a minimal `/health` endpoint and is ready for the first real application use cases.
 
 ## Roadmap
 

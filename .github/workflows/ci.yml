@@ -10,6 +10,19 @@ permissions:
   contents: read
 
 jobs:
+  rust:
+    name: Rust check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Check
+        run: cargo check --workspace
+
   web:
     name: Web build
     runs-on: ubuntu-latest
