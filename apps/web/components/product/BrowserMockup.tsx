@@ -6,7 +6,7 @@ export function BrowserMockup() {
       <div className="browser-top">
         <span className="window-dot red" />
         <span className="window-dot yellow" />
-        <span className="window-dot green" />
+        <span className="window-dot slate" />
         <span className="address">acme-docs.com/guides/api-keys</span>
       </div>
       <div className="browser-body">
@@ -14,7 +14,7 @@ export function BrowserMockup() {
           <div className="mock-lines">
             <span className="line strong" />
             <span className="line" style={{ width: "92px" }} />
-            <span className="line" style={{ width: "78px", background: "#eaf7ef" }} />
+            <span className="line" style={{ width: "78px", background: "#f1f2f4" }} />
             <span className="line" style={{ width: "96px" }} />
             <span className="line" style={{ width: "70px" }} />
             <span className="line" style={{ width: "86px" }} />

@@ -2,7 +2,7 @@ const STEPS = [
   {
     title: "Add your site URL",
     body: "Enter your domain. Perch discovers reachable pages, respects crawl limits, and builds a source map.",
-    color: "#12b76a"
+    color: "#4b5563"
   },
   {
     title: "Perch crawls and indexes",
@@ -27,7 +27,7 @@ export function HowItWorksSection() {
         <div className="steps-grid">
           {STEPS.map((step, index) => (
             <article className="panel" key={step.title}>
-              <div className="step-number" style={{ background: step.color, color: index === 2 ? "#14241d" : "#ffffff" }}>
+              <div className="step-number" style={{ background: step.color, color: index === 2 ? "#18181b" : "#ffffff" }}>
                 {index + 1}
               </div>
               <h3>{step.title}</h3>
@@ -39,7 +39,7 @@ export function HowItWorksSection() {
           <div className="browser-top" style={{ borderColor: "rgba(255,255,255,.08)", background: "#0c1712" }}>
             <span className="window-dot red" />
             <span className="window-dot yellow" />
-            <span className="window-dot green" />
+            <span className="window-dot slate" />
             <span className="address" style={{ background: "#14241d", borderColor: "rgba(255,255,255,.1)", color: "#8fa69c" }}>
               index.html
             </span>

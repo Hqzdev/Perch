@@ -14,7 +14,7 @@ export function LiveDemoSection() {
             <div className="browser-top">
               <span className="window-dot red" />
               <span className="window-dot yellow" />
-              <span className="window-dot green" />
+              <span className="window-dot slate" />
               <span className="address">northwind.io/docs/security</span>
             </div>
             <div className="mock-content">
