@@ -1,0 +1,30 @@
+# Demo Flow
+
+Run the local stack:
+
+```sh
+docker compose up --build -d
+```
+
+Run the portfolio demo:
+
+```sh
+./scripts/portfolio-demo.sh
+```
+
+The script creates a site, indexes one source page through Gateway, asks the widget chat endpoint a question, and prints the grounded answer plus citations.
+
+Expected flow:
+
+```txt
+script
+  -> gateway /v1/sites
+  -> gateway /v1/sites/:siteId/pages
+  -> indexer /v1/index/pages
+  -> Postgres page_chunks
+  -> gateway /v1/widget/chat
+  -> retrieval /v1/answer
+  -> cited answer
+```
+
+This demo intentionally uses direct page ingestion for reliability. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.

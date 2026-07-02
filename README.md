@@ -1,14 +1,54 @@
 # Perch
 
+[![CI](https://github.com/Hqzdev/Perch/actions/workflows/ci.yml/badge.svg)](https://github.com/Hqzdev/Perch/actions/workflows/ci.yml)
+
 Perch is a drop-in AI assistant for websites. Add one script tag, crawl the site, and give visitors answers grounded in the site's own content with cited source links.
 
 Perch is built around one narrow promise: visitors should be able to ask a website what it already says, and every useful answer should point back to the page that supports it.
 
 ## Status
 
-Perch is in early product development. The repository currently contains the web marketing app, a compilable Rust workspace, shared crates, and minimal service entrypoints for the backend boundaries.
+Perch is a portfolio-grade SaaS architecture prototype. It is designed to show clean service boundaries, a working local demo, and honest RAG product mechanics without pretending to be production infrastructure.
 
-Do not treat the project as production-ready yet. The current priority is a working Tier A demo: crawl one website, index pages, embed a framework-free widget, stream cited answers, and show indexing state in a dashboard.
+Implemented today:
+
+- Next.js product site with an embedded widget demo
+- Rust Gateway, Indexer, and Retrieval services
+- Postgres-backed organizations, sites, pages, chunks, crawl jobs, conversations, and messages
+- site creation and widget config resolved by public widget key
+- single-page crawl jobs with persisted status
+- direct page ingestion for deterministic demos
+- retrieval over indexed Postgres chunks with source citations
+- Docker Compose local stack
+- CI for Rust, web build, and Compose config
+
+Intentionally not production-ready yet:
+
+- no production auth or billing
+- no async Redis worker loop for crawl jobs
+- no Qdrant vector search in the answer path yet
+- no external LLM call in the default demo
+- permissive local CORS for development
+
+This tradeoff is deliberate. The project is meant to be reviewable, runnable, and architecturally credible before adding heavier AI/provider infrastructure.
+
+## Portfolio Demo
+
+Start the local stack:
+
+```sh
+docker compose up --build -d
+```
+
+Run the end-to-end demo:
+
+```sh
+./scripts/portfolio-demo.sh
+```
+
+The script creates a site, indexes one page through Gateway, asks a widget question, and prints the cited answer.
+
+See [docs/demo.md](docs/demo.md) for the exact flow.
 
 ## Product Scope
 
@@ -48,9 +88,11 @@ crates/
   rag-core/     shared pure RAG logic
   perch-types/  shared contracts and identifiers
   perch-config/ shared configuration loading
+  perch-storage/   shared Postgres pool and readiness helpers
 
 infra/          local and deployment infrastructure
 docs/           architecture, security, development, and API notes
+scripts/        repeatable demo and maintenance scripts
 ```
 
 ## Architecture
@@ -90,6 +132,11 @@ flowchart LR
 Current implemented path:
 
 ```txt
+gateway /v1/sites/:siteId/crawl-jobs
+  -> indexer /v1/crawl/jobs
+  -> fetch one public HTML page
+  -> Postgres crawl_jobs, site_pages, page_chunks
+
 gateway /v1/sites/:siteId/pages
   -> indexer /v1/index/pages
   -> Postgres site_pages and page_chunks
@@ -103,9 +150,17 @@ Next.js demo widget
   -> sourced answer when chunks exist
 ```
 
-Next backend path:
+Next production path:
 
 ```txt
+site URL
+  -> gateway
+  -> Redis crawl queue
+  -> indexer worker
+  -> sitemap and robots policy
+  -> embeddings
+  -> Qdrant vectors
+
 widget question
   -> gateway
   -> retrieval
@@ -143,6 +198,13 @@ Build:
 ```sh
 cd apps/web
 npm run build
+```
+
+To connect the demo widget to a local Gateway, set:
+
+```sh
+NEXT_PUBLIC_PERCH_GATEWAY_URL=http://localhost:18080
+NEXT_PUBLIC_PERCH_WIDGET_KEY=pk_dev_replace_after_running_demo
 ```
 
 ## Rust Workspace
@@ -191,6 +253,17 @@ http://localhost:6335/readyz
 ```
 
 Gateway is exposed on `localhost:18080`, indexer on `localhost:18081`, retrieval on `localhost:18082`, Postgres on `localhost:5433`, Redis on `localhost:6380`, and Qdrant on `localhost:6335` by default to avoid colliding with common local services.
+
+## Quality Gates
+
+Run the same checks as CI:
+
+```sh
+cargo fmt --all -- --check
+cargo check --workspace
+cd apps/web && npm ci && npm run build
+docker compose config
+```
 
 ## Roadmap
 
