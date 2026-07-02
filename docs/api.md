@@ -111,7 +111,7 @@ Returns:
 }
 ```
 
-Gateway validates the widget key and origin, then calls Retrieval through `POST /v1/answer`. The current Retrieval response is deterministic bootstrap output; tenant-filtered chunk retrieval and streaming are the next backend stage.
+Gateway validates the widget key and origin, then calls Retrieval through `POST /v1/answer`. Retrieval currently searches Postgres `page_chunks` with a simple keyword lookup. Qdrant vector search and streaming are the next backend stage.
 
 ## Internal Retrieval
 
@@ -134,7 +134,7 @@ Returns:
 
 ```json
 {
-  "answer": "Perch searched the currently indexed context for Acme Docs...",
+  "answer": "Based on indexed pages for Acme Docs, the closest matching source says...",
   "citations": [
     {
       "title": "Acme Docs",

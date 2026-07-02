@@ -94,8 +94,9 @@ Next.js demo widget
   -> gateway /v1/widget/config
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
+  -> Postgres page_chunks keyword lookup
   -> Postgres conversations and messages
-  -> deterministic bootstrap answer
+  -> sourced answer when chunks exist
 ```
 
 Next backend path:

@@ -3,18 +3,29 @@ use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
     DependencyReadiness, DependencyStatus, HealthResponse, ReadinessResponse,
-    RetrievalAnswerRequest, RetrievalAnswerResponse, ServiceStatus, WidgetCitation,
+    RetrievalAnswerRequest, RetrievalAnswerResponse, ServiceStatus,
 };
+
+use crate::application::answering::AnswerService;
 
 #[derive(Clone)]
 pub struct HttpState {
     settings: RuntimeSettings,
     database: Database,
+    answer_service: AnswerService,
 }
 
 impl HttpState {
-    pub fn new(settings: RuntimeSettings, database: Database) -> Self {
-        Self { settings, database }
+    pub fn new(
+        settings: RuntimeSettings,
+        database: Database,
+        answer_service: AnswerService,
+    ) -> Self {
+        Self {
+            settings,
+            database,
+            answer_service,
+        }
     }
 }
 
@@ -68,22 +79,17 @@ pub async fn readiness_handler(
 }
 
 pub async fn answer_handler(
+    State(state): State<HttpState>,
     Json(request): Json<RetrievalAnswerRequest>,
 ) -> (StatusCode, Json<RetrievalAnswerResponse>) {
-    let answer = format!(
-        "Perch searched the currently indexed context for {}. Retrieval is wired through the dedicated retrieval service; the next step is replacing this bootstrap answer with tenant-filtered chunks from Qdrant and Postgres. Question: {}",
-        request.site_name,
-        request.question.trim()
-    );
-
-    (
-        StatusCode::OK,
-        Json(RetrievalAnswerResponse {
-            answer,
-            citations: vec![WidgetCitation {
-                title: request.site_name,
-                url: request.site_origin,
-            }],
-        }),
-    )
+    match state.answer_service.answer(request).await {
+        Ok(response) => (StatusCode::OK, Json(response)),
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(RetrievalAnswerResponse {
+                answer: "Retrieval failed while searching indexed content.".to_string(),
+                citations: Vec::new(),
+            }),
+        ),
+    }
 }

@@ -200,6 +200,8 @@ curl -X POST http://localhost:18080/v1/widget/chat \
   -d '{"public_key":"pk_dev_...","session_id":"local-session","message":"How do I install Perch?"}'
 ```
 
+Retrieval reads from `page_chunks`. Until the indexer writes real chunks, responses fall back to a clear no-indexed-context message.
+
 Connect the Next.js demo widget to Gateway:
 
 ```sh
