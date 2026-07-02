@@ -41,6 +41,14 @@ redis-data
 qdrant-data
 ```
 
+Local service configuration:
+
+```txt
+infra/postgres/postgresql.conf
+infra/redis/redis.conf
+infra/qdrant/production.yaml
+```
+
 Reset local infrastructure state:
 
 ```sh
