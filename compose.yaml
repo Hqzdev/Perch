@@ -121,6 +121,9 @@ services:
       PERCH_QDRANT_URL: http://qdrant:6333
       PERCH_QDRANT_ENABLED: "true"
       PERCH_QDRANT_COLLECTION: perch_chunks
+      PERCH_LLM_PROVIDER: disabled
+      PERCH_LLM_MODEL: gpt-4o-mini
+      PERCH_LLM_BASE_URL: https://api.openai.com/v1
     ports:
       - "${PERCH_RETRIEVAL_PORT:-18082}:8082"
     depends_on:

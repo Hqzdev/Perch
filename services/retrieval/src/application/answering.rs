@@ -4,6 +4,7 @@ use perch_types::api::{RetrievalAnswerRequest, RetrievalAnswerResponse, WidgetCi
 use thiserror::Error;
 
 use crate::domain::context::RetrievedContext;
+use crate::infrastructure::llm::{AnswerGenerator, AnswerGeneratorError};
 use crate::infrastructure::qdrant::{QdrantContextRepository, QdrantContextRepositoryError};
 use crate::infrastructure::storage::{ContextRepository, ContextRepositoryError};
 
@@ -11,6 +12,7 @@ use crate::infrastructure::storage::{ContextRepository, ContextRepositoryError};
 pub struct AnswerService {
     repository: Arc<ContextRepository>,
     vectors: Arc<QdrantContextRepository>,
+    generator: Arc<AnswerGenerator>,
 }
 
 #[derive(Debug, Error)]
@@ -19,13 +21,20 @@ pub enum AnswerServiceError {
     Context(#[from] ContextRepositoryError),
     #[error("vector repository failed: {0}")]
     Vector(#[from] QdrantContextRepositoryError),
+    #[error("answer generator failed: {0}")]
+    Generator(#[from] AnswerGeneratorError),
 }
 
 impl AnswerService {
-    pub fn new(repository: ContextRepository, vectors: QdrantContextRepository) -> Self {
+    pub fn new(
+        repository: ContextRepository,
+        vectors: QdrantContextRepository,
+        generator: AnswerGenerator,
+    ) -> Self {
         Self {
             repository: Arc::new(repository),
             vectors: Arc::new(vectors),
+            generator: Arc::new(generator),
         }
     }
 
@@ -53,7 +62,14 @@ impl AnswerService {
         };
 
         Ok(if context.has_sources() {
-            sourced_answer(&request, context)
+            match self.generator.generate(&request, &context).await {
+                Ok(answer) => generated_answer(answer, context),
+                Err(AnswerGeneratorError::Disabled) => sourced_answer(&request, context),
+                Err(error) => {
+                    tracing::warn!(error = %error, site_id = %request.site_id, "llm generation skipped");
+                    sourced_answer(&request, context)
+                }
+            }
         } else {
             fallback_answer(&request)
         })
@@ -87,6 +103,24 @@ fn sourced_answer(
         ),
         citations,
     }
+}
+
+fn generated_answer(answer: String, context: RetrievedContext) -> RetrievalAnswerResponse {
+    RetrievalAnswerResponse {
+        answer,
+        citations: citations_from_context(&context),
+    }
+}
+
+fn citations_from_context(context: &RetrievedContext) -> Vec<WidgetCitation> {
+    context
+        .chunks
+        .iter()
+        .map(|chunk| WidgetCitation {
+            title: chunk.source_title.clone(),
+            url: chunk.source_url.clone(),
+        })
+        .collect()
 }
 
 fn fallback_answer(request: &RetrievalAnswerRequest) -> RetrievalAnswerResponse {

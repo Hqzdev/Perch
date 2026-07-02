@@ -17,6 +17,7 @@ pub struct RuntimeSettings {
     pub data_stores: DataStoreSettings,
     pub services: UpstreamServiceSettings,
     pub vector_search: VectorSearchSettings,
+    pub llm: LlmSettings,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -37,6 +38,14 @@ pub struct VectorSearchSettings {
     pub enabled: bool,
     pub url: Url,
     pub collection: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LlmSettings {
+    pub provider: String,
+    pub model: String,
+    pub api_key: Option<String>,
+    pub base_url: Url,
 }
 
 #[derive(Debug, Error)]
@@ -75,6 +84,7 @@ impl RuntimeSettings {
             data_stores: DataStoreSettings::from_env()?,
             services: UpstreamServiceSettings::from_env()?,
             vector_search: VectorSearchSettings::from_env()?,
+            llm: LlmSettings::from_env()?,
         })
     }
 }
@@ -109,6 +119,25 @@ impl VectorSearchSettings {
             collection: env::var("PERCH_QDRANT_COLLECTION")
                 .unwrap_or_else(|_| "perch_chunks".to_string()),
         })
+    }
+}
+
+impl LlmSettings {
+    pub fn from_env() -> Result<Self, ConfigError> {
+        Ok(Self {
+            provider: env::var("PERCH_LLM_PROVIDER")
+                .unwrap_or_else(|_| "disabled".to_string())
+                .to_lowercase(),
+            model: env::var("PERCH_LLM_MODEL").unwrap_or_else(|_| "gpt-4o-mini".to_string()),
+            api_key: env::var("PERCH_LLM_API_KEY")
+                .ok()
+                .filter(|value| !value.trim().is_empty()),
+            base_url: parse_url("PERCH_LLM_BASE_URL", "https://api.openai.com/v1")?,
+        })
+    }
+
+    pub fn enabled(&self) -> bool {
+        self.provider != "disabled" && self.api_key.is_some()
     }
 }
 

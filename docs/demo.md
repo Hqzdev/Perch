@@ -26,7 +26,8 @@ script
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
   -> Qdrant vector search
+  -> deterministic answer generator
   -> cited answer
 ```
 
-The local demo uses deterministic hash embeddings, so Qdrant retrieval works without external API keys. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.
+The local demo uses deterministic hash embeddings and keeps `PERCH_LLM_PROVIDER=disabled`, so Qdrant retrieval works without external API keys. Set `PERCH_LLM_PROVIDER=openai`, `PERCH_LLM_API_KEY`, and `PERCH_LLM_MODEL` to let retrieval generate the final answer with an OpenAI-compatible chat completion API. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.

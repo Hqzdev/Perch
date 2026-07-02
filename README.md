@@ -27,6 +27,7 @@ Implemented today:
 - single-page crawl jobs with persisted status
 - direct page ingestion for deterministic demos
 - retrieval over Qdrant vectors with Postgres keyword fallback and source citations
+- optional OpenAI-compatible LLM generation with deterministic fallback
 - Docker Compose local stack
 - CI for Rust, web build, and Compose config
 
@@ -34,7 +35,7 @@ Intentionally not production-ready yet:
 
 - no production auth or billing
 - no async Redis worker loop for crawl jobs
-- no external LLM call in the default demo
+- no external LLM call in the default demo unless `PERCH_LLM_PROVIDER=openai` is configured
 - permissive local CORS for development
 
 This tradeoff is deliberate. The project is meant to be reviewable, runnable, and architecturally credible before adding heavier provider infrastructure.
@@ -156,6 +157,7 @@ Next.js demo widget
   -> retrieval /v1/answer
   -> Qdrant vector search
   -> Postgres page_chunks keyword fallback
+  -> optional OpenAI-compatible LLM answer generation
   -> Postgres conversations and messages
   -> sourced answer when chunks exist
 ```
