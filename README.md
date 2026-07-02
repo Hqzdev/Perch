@@ -8,11 +8,34 @@ Perch is built around one narrow promise: visitors should be able to ask a websi
 
 ## Screenshots
 
-![Perch website hero](apps/web/public/screenshots/perch-home-hero.png)
+Hero and value proposition:
 
-![Perch cited answer demo](apps/web/public/screenshots/perch-demo-section.png)
+![Perch page section 1](apps/web/public/screenshots/perch-page-01.png)
 
-![Perch mobile website](apps/web/public/screenshots/perch-mobile.png)
+How it works, install snippet, and trust model:
+
+![Perch page section 2](apps/web/public/screenshots/perch-page-02.png)
+
+Dashboard, source coverage, and pricing:
+
+![Perch page section 3](apps/web/public/screenshots/perch-page-03.png)
+
+FAQ, final CTA, and footer:
+
+![Perch page section 4](apps/web/public/screenshots/perch-page-04.png)
+
+## Tech Stack
+
+| Layer | Technologies |
+| --- | --- |
+| Frontend | Next.js, React, TypeScript, CSS |
+| Widget | Framework-free JavaScript, Shadow DOM, script tag embed |
+| Backend | Rust, Axum, Tokio, Reqwest |
+| Data | Postgres, Redis, Qdrant |
+| RAG | deterministic embeddings for local demos, Qdrant vector search, Postgres keyword fallback, source citations |
+| LLM | optional OpenAI-compatible chat completion provider, disabled by default |
+| Infrastructure | Docker Compose, service-specific Dockerfiles, Postgres/Redis/Qdrant configs, SQL migrations |
+| Quality | Rust workspace checks, Next.js production build, Docker Compose validation, end-to-end smoke test, GitHub Actions CI |
 
 ## Status
 
@@ -44,27 +67,41 @@ This tradeoff is deliberate. The project is meant to be reviewable, runnable, an
 
 ## Portfolio Demo
 
-Start the local stack:
+Run the backend stack:
 
 ```sh
 docker compose up --build -d
 ```
 
-Run the end-to-end demo:
-
-```sh
-./scripts/portfolio-demo.sh
-```
-
-The script creates a site, indexes one page through Gateway, asks a widget question, and prints the cited answer.
-
-Run the stricter smoke test before showing the backend:
+Verify the product flow:
 
 ```sh
 ./scripts/smoke-test.sh
 ```
 
-The smoke test checks readiness, creates a tenant site, indexes a page, verifies Qdrant points, calls widget chat, and fails if the answer does not include a source citation.
+Run the web app:
+
+```sh
+cd apps/web
+npm install
+npm run dev
+```
+
+Open:
+
+```txt
+http://localhost:3000
+http://localhost:3000/dashboard
+http://localhost:3000/widget-demo?key=pk_dev_...
+```
+
+For a printed backend walkthrough, run:
+
+```sh
+./scripts/portfolio-demo.sh
+```
+
+The smoke test checks readiness, creates a tenant site, indexes a page, verifies Qdrant points, calls widget chat, and fails if the answer does not include a source citation. The portfolio demo script prints the same flow as a readable walkthrough.
 
 See [docs/demo.md](docs/demo.md) for the exact flow.
 
