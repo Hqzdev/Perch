@@ -1,15 +1,19 @@
 use std::sync::Arc;
 
+use perch_types::api::{IndexPageResponse, IndexSitePageRequest};
 use thiserror::Error;
+use uuid::Uuid;
 
 use crate::domain::messages::{AssistantAnswer, VisitorMessage};
 use crate::domain::sites::{NewSite, Site};
+use crate::infrastructure::indexer::{IndexerClient, IndexerClientError};
 use crate::infrastructure::retrieval::{RetrievalClient, RetrievalClientError};
 use crate::infrastructure::storage::{SiteRepository, SiteRepositoryError};
 
 #[derive(Debug, Clone)]
 pub struct SiteService {
     repository: Arc<SiteRepository>,
+    indexer: Arc<IndexerClient>,
     retrieval: Arc<RetrievalClient>,
 }
 
@@ -27,14 +31,21 @@ pub enum SiteServiceError {
     NotFound,
     #[error("site storage failed: {0}")]
     Storage(#[from] SiteRepositoryError),
+    #[error("indexer request failed: {0}")]
+    Indexer(#[from] IndexerClientError),
     #[error("retrieval request failed: {0}")]
     Retrieval(#[from] RetrievalClientError),
 }
 
 impl SiteService {
-    pub fn new(repository: SiteRepository, retrieval: RetrievalClient) -> Self {
+    pub fn new(
+        repository: SiteRepository,
+        indexer: IndexerClient,
+        retrieval: RetrievalClient,
+    ) -> Self {
         Self {
             repository: Arc::new(repository),
+            indexer: Arc::new(indexer),
             retrieval: Arc::new(retrieval),
         }
     }
@@ -87,6 +98,22 @@ impl SiteService {
 
         self.repository
             .record_widget_exchange(site.id, message, draft)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn index_site_page(
+        &self,
+        site_id: Uuid,
+        request: IndexSitePageRequest,
+    ) -> Result<IndexPageResponse, SiteServiceError> {
+        self.repository
+            .find_by_id(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)?;
+
+        self.indexer
+            .index_page(site_id, request)
             .await
             .map_err(Into::into)
     }

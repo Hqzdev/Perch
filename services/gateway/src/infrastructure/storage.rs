@@ -77,6 +77,17 @@ impl SiteRepository {
         Ok(row.map(Self::site_from_row))
     }
 
+    pub async fn find_by_id(&self, site_id: Uuid) -> Result<Option<Site>, SiteRepositoryError> {
+        let row = sqlx::query(
+            "select id, organization_id, name, origin, script_key from sites where id = $1",
+        )
+        .bind(site_id)
+        .fetch_optional(self.database.pool())
+        .await?;
+
+        Ok(row.map(Self::site_from_row))
+    }
+
     pub async fn record_widget_exchange(
         &self,
         site_id: Uuid,

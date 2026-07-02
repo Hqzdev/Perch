@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Query, State},
+    extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},
     response::{IntoResponse, Response},
     Json,
@@ -8,8 +8,9 @@ use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
     CreateSiteRequest, DependencyReadiness, DependencyStatus, ErrorBody, ErrorResponse,
-    HealthResponse, ReadinessResponse, ServiceStatus, SiteResponse, WidgetChatRequest,
-    WidgetChatResponse, WidgetCitation, WidgetConfigResponse, WidgetFeatures, WidgetTheme,
+    HealthResponse, IndexPageResponse, IndexSitePageRequest, ReadinessResponse, ServiceStatus,
+    SiteResponse, WidgetChatRequest, WidgetChatResponse, WidgetCitation, WidgetConfigResponse,
+    WidgetFeatures, WidgetTheme,
 };
 use serde::Deserialize;
 
@@ -136,6 +137,20 @@ pub async fn create_site_handler(
     Ok((StatusCode::CREATED, Json(site_response(site))))
 }
 
+pub async fn index_site_page_handler(
+    State(state): State<HttpState>,
+    Path(site_id): Path<uuid::Uuid>,
+    Json(request): Json<IndexSitePageRequest>,
+) -> Result<(StatusCode, Json<IndexPageResponse>), ApiError> {
+    let page = state
+        .site_service
+        .index_site_page(site_id, request)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok((StatusCode::CREATED, Json(page)))
+}
+
 pub async fn widget_config_handler(
     State(state): State<HttpState>,
     Query(query): Query<WidgetConfigQuery>,
@@ -237,6 +252,11 @@ fn api_error_from_site_error(error: SiteServiceError) -> ApiError {
             StatusCode::INTERNAL_SERVER_ERROR,
             "storage_error",
             "The request could not be completed.",
+        ),
+        SiteServiceError::Indexer(_) => ApiError::new(
+            StatusCode::BAD_GATEWAY,
+            "indexer_unavailable",
+            "The indexing service is unavailable.",
         ),
         SiteServiceError::Retrieval(_) => ApiError::new(
             StatusCode::BAD_GATEWAY,

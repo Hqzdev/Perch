@@ -104,6 +104,14 @@ pub struct IndexPageRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct IndexSitePageRequest {
+    pub url: String,
+    pub title: Option<String>,
+    pub content: String,
+    pub content_type: IndexContentType,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum IndexContentType {
     Html,

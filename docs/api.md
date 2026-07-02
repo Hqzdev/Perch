@@ -130,7 +130,31 @@ Request:
 }
 ```
 
-## Internal Indexing
+Returns:
+
+```json
+{
+  "answer": "Based on indexed pages for Acme Docs, the closest matching source says...",
+  "citations": [
+    {
+      "title": "Acme Docs",
+      "url": "https://docs.acme.example"
+    }
+  ]
+}
+```
+
+## Page Indexing
+
+Gateway route:
+
+```txt
+POST /v1/sites/:siteId/pages
+```
+
+It validates that the site exists, then forwards the page to Indexer.
+
+Internal Indexer route:
 
 ```txt
 POST /v1/index/pages
@@ -159,20 +183,6 @@ Returns:
 
 The current endpoint is a direct ingestion API. Crawling, sitemap discovery, robots policy, and queue-based jobs remain separate indexer work.
 
-Returns:
-
-```json
-{
-  "answer": "Based on indexed pages for Acme Docs, the closest matching source says...",
-  "citations": [
-    {
-      "title": "Acme Docs",
-      "url": "https://docs.acme.example"
-    }
-  ]
-}
-```
-
 ## Dashboard
 
 Dashboard routes require authenticated sessions.
@@ -180,6 +190,7 @@ Dashboard routes require authenticated sessions.
 Implemented bootstrap routes:
 
 - `POST /v1/sites`
+- `POST /v1/sites/:siteId/pages`
 
 Create site request:
 

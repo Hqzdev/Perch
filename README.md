@@ -90,7 +90,8 @@ flowchart LR
 Current implemented path:
 
 ```txt
-indexer /v1/index/pages
+gateway /v1/sites/:siteId/pages
+  -> indexer /v1/index/pages
   -> Postgres site_pages and page_chunks
 
 Next.js demo widget
@@ -164,7 +165,7 @@ Current backend product endpoints:
 
 ```txt
 POST /v1/sites
-POST /v1/index/pages
+POST /v1/sites/:siteId/pages
 GET  /v1/widget/config
 POST /v1/widget/chat
 POST /v1/answer

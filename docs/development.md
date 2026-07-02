@@ -63,6 +63,7 @@ PERCH_ENV=development
 PERCH_DATABASE_URL=postgres://perch:perch@127.0.0.1:5433/perch
 PERCH_REDIS_URL=redis://127.0.0.1:6380
 PERCH_QDRANT_URL=http://127.0.0.1:6335
+PERCH_INDEXER_URL=http://127.0.0.1:8081
 PERCH_RETRIEVAL_URL=http://127.0.0.1:8082
 ```
 
@@ -202,12 +203,12 @@ curl -X POST http://localhost:18080/v1/widget/chat \
 
 Retrieval reads from `page_chunks`. Until the indexer writes real chunks, responses fall back to a clear no-indexed-context message.
 
-Index a page directly:
+Index a page through Gateway:
 
 ```sh
-curl -X POST http://localhost:18081/v1/index/pages \
+curl -X POST http://localhost:18080/v1/sites/.../pages \
   -H 'content-type: application/json' \
-  -d '{"site_id":"...","url":"https://docs.acme.example/install","title":"Install Perch","content":"Install Perch with one script tag.","content_type":"text"}'
+  -d '{"url":"https://docs.acme.example/install","title":"Install Perch","content":"Install Perch with one script tag.","content_type":"text"}'
 ```
 
 Connect the Next.js demo widget to Gateway:

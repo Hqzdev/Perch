@@ -27,6 +27,7 @@ pub struct DataStoreSettings {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UpstreamServiceSettings {
+    pub indexer_url: Url,
     pub retrieval_url: Url,
 }
 
@@ -85,6 +86,7 @@ impl DataStoreSettings {
 impl UpstreamServiceSettings {
     pub fn from_env() -> Result<Self, ConfigError> {
         Ok(Self {
+            indexer_url: parse_url("PERCH_INDEXER_URL", "http://127.0.0.1:8081")?,
             retrieval_url: parse_url("PERCH_RETRIEVAL_URL", "http://127.0.0.1:8082")?,
         })
     }
