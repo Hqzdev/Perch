@@ -12,6 +12,17 @@ pub struct PageDocument {
 pub struct IndexedPage {
     pub page_id: Uuid,
     pub chunks_indexed: usize,
+    pub chunks: Vec<IndexedChunk>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IndexedChunk {
+    pub chunk_id: Uuid,
+    pub page_id: Uuid,
+    pub chunk_index: usize,
+    pub content: String,
+    pub source_url: String,
+    pub source_title: String,
 }
 
 impl PageDocument {

@@ -26,7 +26,7 @@ Implemented today:
 - site creation and widget config resolved by public widget key
 - single-page crawl jobs with persisted status
 - direct page ingestion for deterministic demos
-- retrieval over indexed Postgres chunks with source citations
+- retrieval over Qdrant vectors with Postgres keyword fallback and source citations
 - Docker Compose local stack
 - CI for Rust, web build, and Compose config
 
@@ -34,11 +34,10 @@ Intentionally not production-ready yet:
 
 - no production auth or billing
 - no async Redis worker loop for crawl jobs
-- no Qdrant vector search in the answer path yet
 - no external LLM call in the default demo
 - permissive local CORS for development
 
-This tradeoff is deliberate. The project is meant to be reviewable, runnable, and architecturally credible before adding heavier AI/provider infrastructure.
+This tradeoff is deliberate. The project is meant to be reviewable, runnable, and architecturally credible before adding heavier provider infrastructure.
 
 ## Portfolio Demo
 
@@ -144,16 +143,19 @@ gateway /v1/sites/:siteId/crawl-jobs
   -> indexer /v1/crawl/jobs
   -> fetch one public HTML page
   -> Postgres crawl_jobs, site_pages, page_chunks
+  -> Qdrant perch_chunks vectors
 
 gateway /v1/sites/:siteId/pages
   -> indexer /v1/index/pages
   -> Postgres site_pages and page_chunks
+  -> Qdrant perch_chunks vectors
 
 Next.js demo widget
   -> gateway /v1/widget/config
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
-  -> Postgres page_chunks keyword lookup
+  -> Qdrant vector search
+  -> Postgres page_chunks keyword fallback
   -> Postgres conversations and messages
   -> sourced answer when chunks exist
 ```
@@ -166,13 +168,14 @@ site URL
   -> Redis crawl queue
   -> indexer worker
   -> sitemap and robots policy
-  -> embeddings
+  -> provider embeddings
   -> Qdrant vectors
 
 widget question
   -> gateway
   -> retrieval
-  -> tenant-filtered chunks from Postgres and Qdrant
+  -> tenant-filtered chunks from Qdrant
+  -> optional provider-generated answer
   -> cited answer
   -> widget
 ```

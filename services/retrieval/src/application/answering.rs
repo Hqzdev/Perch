@@ -4,23 +4,28 @@ use perch_types::api::{RetrievalAnswerRequest, RetrievalAnswerResponse, WidgetCi
 use thiserror::Error;
 
 use crate::domain::context::RetrievedContext;
+use crate::infrastructure::qdrant::{QdrantContextRepository, QdrantContextRepositoryError};
 use crate::infrastructure::storage::{ContextRepository, ContextRepositoryError};
 
 #[derive(Debug, Clone)]
 pub struct AnswerService {
     repository: Arc<ContextRepository>,
+    vectors: Arc<QdrantContextRepository>,
 }
 
 #[derive(Debug, Error)]
 pub enum AnswerServiceError {
     #[error("context repository failed: {0}")]
     Context(#[from] ContextRepositoryError),
+    #[error("vector repository failed: {0}")]
+    Vector(#[from] QdrantContextRepositoryError),
 }
 
 impl AnswerService {
-    pub fn new(repository: ContextRepository) -> Self {
+    pub fn new(repository: ContextRepository, vectors: QdrantContextRepository) -> Self {
         Self {
             repository: Arc::new(repository),
+            vectors: Arc::new(vectors),
         }
     }
 
@@ -28,10 +33,24 @@ impl AnswerService {
         &self,
         request: RetrievalAnswerRequest,
     ) -> Result<RetrievalAnswerResponse, AnswerServiceError> {
-        let context = self
-            .repository
+        let vector_context = match self
+            .vectors
             .search(request.site_id, &request.question)
-            .await?;
+            .await
+        {
+            Ok(context) => context,
+            Err(error) => {
+                tracing::warn!(error = %error, site_id = %request.site_id, "vector search failed");
+                RetrievedContext::empty()
+            }
+        };
+        let context = if vector_context.has_sources() {
+            vector_context
+        } else {
+            self.repository
+                .search(request.site_id, &request.question)
+                .await?
+        };
 
         Ok(if context.has_sources() {
             sourced_answer(&request, context)

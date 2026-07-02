@@ -12,6 +12,7 @@ use tower_http::trace::TraceLayer;
 
 use crate::application::indexing::IndexingService;
 use crate::infrastructure::crawler::WebCrawler;
+use crate::infrastructure::qdrant::QdrantVectorStore;
 use crate::infrastructure::storage::PageRepository;
 use crate::interfaces::http::{
     crawl_job_handler, crawl_job_status_handler, health_handler, index_page_handler,
@@ -26,8 +27,11 @@ async fn main() -> anyhow::Result<()> {
 
     let settings = RuntimeSettings::from_env("indexer", 8081)?;
     let database = Database::new(&settings.data_stores.database_url)?;
-    let indexing_service =
-        IndexingService::new(WebCrawler::new(), PageRepository::new(database.clone()));
+    let indexing_service = IndexingService::new(
+        WebCrawler::new(),
+        PageRepository::new(database.clone()),
+        QdrantVectorStore::new(settings.vector_search.clone()),
+    );
     let state = HttpState::new(settings.clone(), database, indexing_service);
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))

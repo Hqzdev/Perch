@@ -16,6 +16,7 @@ pub struct RuntimeSettings {
     pub environment: String,
     pub data_stores: DataStoreSettings,
     pub services: UpstreamServiceSettings,
+    pub vector_search: VectorSearchSettings,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,6 +30,13 @@ pub struct DataStoreSettings {
 pub struct UpstreamServiceSettings {
     pub indexer_url: Url,
     pub retrieval_url: Url,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VectorSearchSettings {
+    pub enabled: bool,
+    pub url: Url,
+    pub collection: String,
 }
 
 #[derive(Debug, Error)]
@@ -66,6 +74,7 @@ impl RuntimeSettings {
             environment: env::var("PERCH_ENV").unwrap_or_else(|_| "development".to_string()),
             data_stores: DataStoreSettings::from_env()?,
             services: UpstreamServiceSettings::from_env()?,
+            vector_search: VectorSearchSettings::from_env()?,
         })
     }
 }
@@ -92,6 +101,17 @@ impl UpstreamServiceSettings {
     }
 }
 
+impl VectorSearchSettings {
+    pub fn from_env() -> Result<Self, ConfigError> {
+        Ok(Self {
+            enabled: env_bool("PERCH_QDRANT_ENABLED", true),
+            url: parse_url("PERCH_QDRANT_URL", "http://127.0.0.1:6335")?,
+            collection: env::var("PERCH_QDRANT_COLLECTION")
+                .unwrap_or_else(|_| "perch_chunks".to_string()),
+        })
+    }
+}
+
 pub fn env_key_prefix(value: &str) -> String {
     value.replace('-', "_").to_uppercase()
 }
@@ -102,4 +122,15 @@ fn parse_url(variable: &str, fallback: &str) -> Result<Url, ConfigError> {
         variable: variable.to_string(),
         source,
     })
+}
+
+fn env_bool(variable: &str, fallback: bool) -> bool {
+    env::var(variable)
+        .ok()
+        .and_then(|value| match value.to_lowercase().as_str() {
+            "1" | "true" | "yes" | "on" => Some(true),
+            "0" | "false" | "no" | "off" => Some(false),
+            _ => None,
+        })
+        .unwrap_or(fallback)
 }

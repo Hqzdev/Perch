@@ -22,9 +22,11 @@ script
   -> gateway /v1/sites/:siteId/pages
   -> indexer /v1/index/pages
   -> Postgres page_chunks
+  -> Qdrant perch_chunks vectors
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
+  -> Qdrant vector search
   -> cited answer
 ```
 
-This demo intentionally uses direct page ingestion for reliability. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.
+The local demo uses deterministic hash embeddings, so Qdrant retrieval works without external API keys. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.

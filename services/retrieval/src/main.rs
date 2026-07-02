@@ -11,6 +11,7 @@ use perch_storage::Database;
 use tower_http::trace::TraceLayer;
 
 use crate::application::answering::AnswerService;
+use crate::infrastructure::qdrant::QdrantContextRepository;
 use crate::infrastructure::storage::ContextRepository;
 use crate::interfaces::http::{answer_handler, health_handler, readiness_handler, HttpState};
 
@@ -22,7 +23,10 @@ async fn main() -> anyhow::Result<()> {
 
     let settings = RuntimeSettings::from_env("retrieval", 8082)?;
     let database = Database::new(&settings.data_stores.database_url)?;
-    let answer_service = AnswerService::new(ContextRepository::new(database.clone()));
+    let answer_service = AnswerService::new(
+        ContextRepository::new(database.clone()),
+        QdrantContextRepository::new(settings.vector_search.clone()),
+    );
     let state = HttpState::new(settings.clone(), database, answer_service);
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))

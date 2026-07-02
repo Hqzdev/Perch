@@ -7,12 +7,14 @@ use uuid::Uuid;
 
 use crate::domain::pages::{text_from_html, IndexedPage, PageDocument};
 use crate::infrastructure::crawler::{WebCrawler, WebCrawlerError};
+use crate::infrastructure::qdrant::QdrantVectorStore;
 use crate::infrastructure::storage::{PageRepository, PageRepositoryError};
 
 #[derive(Debug, Clone)]
 pub struct IndexingService {
     crawler: Arc<WebCrawler>,
     repository: Arc<PageRepository>,
+    vectors: Arc<QdrantVectorStore>,
 }
 
 #[derive(Debug, Error)]
@@ -28,10 +30,15 @@ pub enum IndexingServiceError {
 }
 
 impl IndexingService {
-    pub fn new(crawler: WebCrawler, repository: PageRepository) -> Self {
+    pub fn new(
+        crawler: WebCrawler,
+        repository: PageRepository,
+        vectors: QdrantVectorStore,
+    ) -> Self {
         Self {
             crawler: Arc::new(crawler),
             repository: Arc::new(repository),
+            vectors: Arc::new(vectors),
         }
     }
 
@@ -43,11 +50,19 @@ impl IndexingService {
             return Err(IndexingServiceError::InvalidPage);
         }
 
+        let site_id = document.site_id;
         let chunks = chunk_text(&document.content, ChunkingConfig::conservative());
-        self.repository
-            .upsert_page(document, chunks)
+        let indexed = self.repository.upsert_page(document, chunks).await?;
+
+        if let Err(error) = self
+            .vectors
+            .upsert_page_chunks(site_id, indexed.page_id, &indexed.chunks)
             .await
-            .map_err(Into::into)
+        {
+            tracing::warn!(error = %error, page_id = %indexed.page_id, "vector projection failed");
+        }
+
+        Ok(indexed)
     }
 
     pub async fn crawl_page(

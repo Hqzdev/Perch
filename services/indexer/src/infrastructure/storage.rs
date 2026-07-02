@@ -5,7 +5,7 @@ use sqlx::Row;
 use thiserror::Error;
 use uuid::Uuid;
 
-use crate::domain::pages::{IndexedPage, PageDocument};
+use crate::domain::pages::{IndexedChunk, IndexedPage, PageDocument};
 
 #[derive(Debug, Clone)]
 pub struct PageRepository {
@@ -50,12 +50,16 @@ impl PageRepository {
             .execute(&mut *transaction)
             .await?;
 
+        let mut indexed_chunks = Vec::with_capacity(chunks.len());
+
         for chunk in &chunks {
+            let chunk_id = Uuid::new_v4();
+
             sqlx::query(
                 "insert into page_chunks (id, page_id, chunk_index, content, token_count, source_url, source_title)
                  values ($1, $2, $3, $4, $5, $6, $7)",
             )
-            .bind(Uuid::new_v4())
+            .bind(chunk_id)
             .bind(page_id)
             .bind(chunk.index as i32)
             .bind(&chunk.text)
@@ -64,6 +68,18 @@ impl PageRepository {
             .bind(&document.title)
             .execute(&mut *transaction)
             .await?;
+
+            indexed_chunks.push(IndexedChunk {
+                chunk_id,
+                page_id,
+                chunk_index: chunk.index,
+                content: chunk.text.clone(),
+                source_url: document.url.clone(),
+                source_title: document
+                    .title
+                    .clone()
+                    .unwrap_or_else(|| document.url.clone()),
+            });
         }
 
         transaction.commit().await?;
@@ -71,6 +87,7 @@ impl PageRepository {
         Ok(IndexedPage {
             page_id,
             chunks_indexed: chunks.len(),
+            chunks: indexed_chunks,
         })
     }
 
