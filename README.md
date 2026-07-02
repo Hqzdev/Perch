@@ -167,6 +167,7 @@ Current backend product endpoints:
 POST /v1/sites
 POST /v1/sites/:siteId/pages
 POST /v1/sites/:siteId/crawl-jobs
+GET  /v1/sites/:siteId/crawl-jobs/:jobId
 GET  /v1/widget/config
 POST /v1/widget/chat
 POST /v1/answer

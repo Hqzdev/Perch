@@ -14,7 +14,8 @@ use crate::application::indexing::IndexingService;
 use crate::infrastructure::crawler::WebCrawler;
 use crate::infrastructure::storage::PageRepository;
 use crate::interfaces::http::{
-    crawl_job_handler, health_handler, index_page_handler, readiness_handler, HttpState,
+    crawl_job_handler, crawl_job_status_handler, health_handler, index_page_handler,
+    readiness_handler, HttpState,
 };
 
 #[tokio::main]
@@ -33,6 +34,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/ready", axum::routing::get(readiness_handler))
         .route("/v1/index/pages", axum::routing::post(index_page_handler))
         .route("/v1/crawl/jobs", axum::routing::post(crawl_job_handler))
+        .route(
+            "/v1/crawl/jobs/{job_id}",
+            axum::routing::get(crawl_job_status_handler),
+        )
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

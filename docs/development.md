@@ -219,6 +219,12 @@ curl -X POST http://localhost:18080/v1/sites/.../crawl-jobs \
   -d '{"url":"https://docs.acme.example/install"}'
 ```
 
+Read crawl job status:
+
+```sh
+curl http://localhost:18080/v1/sites/.../crawl-jobs/...
+```
+
 Connect the Next.js demo widget to Gateway:
 
 ```sh

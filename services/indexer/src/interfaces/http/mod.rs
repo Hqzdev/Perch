@@ -1,5 +1,5 @@
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
@@ -161,6 +161,26 @@ pub async fn crawl_job_handler(
         .map_err(api_error_from_indexing_error)?;
 
     Ok((StatusCode::CREATED, Json(response)))
+}
+
+pub async fn crawl_job_status_handler(
+    State(state): State<HttpState>,
+    Path(job_id): Path<uuid::Uuid>,
+) -> Result<Json<CrawlJobResponse>, ApiError> {
+    let response = state
+        .indexing_service
+        .crawl_job(job_id)
+        .await
+        .map_err(api_error_from_indexing_error)?
+        .ok_or_else(|| {
+            ApiError::new(
+                StatusCode::NOT_FOUND,
+                "crawl_job_not_found",
+                "The crawl job was not found.",
+            )
+        })?;
+
+    Ok(Json(response))
 }
 
 fn api_error_from_indexing_error(error: IndexingServiceError) -> ApiError {

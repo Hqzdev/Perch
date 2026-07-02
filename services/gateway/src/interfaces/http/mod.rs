@@ -165,6 +165,19 @@ pub async fn crawl_site_page_handler(
     Ok((StatusCode::CREATED, Json(response)))
 }
 
+pub async fn crawl_job_status_handler(
+    State(state): State<HttpState>,
+    Path((site_id, job_id)): Path<(uuid::Uuid, uuid::Uuid)>,
+) -> Result<Json<CrawlJobResponse>, ApiError> {
+    let response = state
+        .site_service
+        .crawl_job(site_id, job_id)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(response))
+}
+
 pub async fn widget_config_handler(
     State(state): State<HttpState>,
     Query(query): Query<WidgetConfigQuery>,

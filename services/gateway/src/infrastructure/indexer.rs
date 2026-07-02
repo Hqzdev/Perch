@@ -75,4 +75,18 @@ impl IndexerClient {
 
         Ok(response)
     }
+
+    pub async fn crawl_job(&self, job_id: Uuid) -> Result<CrawlJobResponse, IndexerClientError> {
+        let url = self.base_url.join(&format!("/v1/crawl/jobs/{job_id}"))?;
+        let response = self
+            .client
+            .get(url)
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<CrawlJobResponse>()
+            .await?;
+
+        Ok(response)
+    }
 }

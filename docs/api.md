@@ -203,15 +203,24 @@ Returns:
 
 ```json
 {
+  "job_id": "018f0000-0000-7000-9000-000000000006",
   "site_id": "018f0000-0000-7000-9000-000000000001",
   "url": "https://docs.acme.example/install",
+  "status": "succeeded",
   "page_id": "018f0000-0000-7000-9000-000000000005",
   "pages_indexed": 1,
-  "chunks_indexed": 3
+  "chunks_indexed": 3,
+  "error_message": null
 }
 ```
 
 This is a synchronous single-page crawl. Queue-backed crawl jobs, sitemap discovery, and robots policy are separate work.
+
+Read crawl job status:
+
+```txt
+GET /v1/sites/:siteId/crawl-jobs/:jobId
+```
 
 ## Dashboard
 

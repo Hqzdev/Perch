@@ -62,7 +62,18 @@ impl IndexingService {
             return Err(IndexingServiceError::InvalidCrawlTarget);
         }
 
-        let fetched = self.crawler.fetch(&url).await?;
+        let job = self.repository.create_crawl_job(site_id, &url).await?;
+        self.repository.mark_crawl_running(job.job_id).await?;
+        let fetched = match self.crawler.fetch(&url).await {
+            Ok(fetched) => fetched,
+            Err(error) => {
+                return self
+                    .repository
+                    .mark_crawl_failed(job.job_id, error.to_string())
+                    .await
+                    .map_err(Into::into);
+            }
+        };
         let indexed = self
             .index_page(PageDocument::new(
                 site_id,
@@ -72,13 +83,20 @@ impl IndexingService {
             ))
             .await?;
 
-        Ok(CrawlJobResponse {
-            site_id,
-            url: fetched.url,
-            page_id: indexed.page_id,
-            pages_indexed: 1,
-            chunks_indexed: indexed.chunks_indexed,
-        })
+        self.repository
+            .mark_crawl_succeeded(job.job_id, indexed.page_id, indexed.chunks_indexed)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn crawl_job(
+        &self,
+        job_id: Uuid,
+    ) -> Result<Option<CrawlJobResponse>, IndexingServiceError> {
+        self.repository
+            .find_crawl_job(job_id)
+            .await
+            .map_err(Into::into)
     }
 }
 

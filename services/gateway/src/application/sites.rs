@@ -136,4 +136,23 @@ impl SiteService {
             .await
             .map_err(Into::into)
     }
+
+    pub async fn crawl_job(
+        &self,
+        site_id: Uuid,
+        job_id: Uuid,
+    ) -> Result<CrawlJobResponse, SiteServiceError> {
+        self.repository
+            .find_by_id(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)?;
+
+        let job = self.indexer.crawl_job(job_id).await?;
+
+        if job.site_id != site_id {
+            return Err(SiteServiceError::NotFound);
+        }
+
+        Ok(job)
+    }
 }

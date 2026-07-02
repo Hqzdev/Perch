@@ -16,8 +16,9 @@ use crate::infrastructure::indexer::IndexerClient;
 use crate::infrastructure::retrieval::RetrievalClient;
 use crate::infrastructure::storage::SiteRepository;
 use crate::interfaces::http::{
-    crawl_site_page_handler, create_site_handler, health_handler, index_site_page_handler,
-    readiness_handler, widget_chat_handler, widget_config_handler, HttpState,
+    crawl_job_status_handler, crawl_site_page_handler, create_site_handler, health_handler,
+    index_site_page_handler, readiness_handler, widget_chat_handler, widget_config_handler,
+    HttpState,
 };
 
 #[tokio::main]
@@ -43,6 +44,10 @@ async fn main() -> anyhow::Result<()> {
         .route(
             "/v1/sites/{site_id}/crawl-jobs",
             axum::routing::post(crawl_site_page_handler),
+        )
+        .route(
+            "/v1/sites/{site_id}/crawl-jobs/{job_id}",
+            axum::routing::get(crawl_job_status_handler),
         )
         .route(
             "/v1/widget/config",

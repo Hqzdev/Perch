@@ -137,11 +137,23 @@ pub struct IndexPageResponse {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CrawlJobResponse {
+    pub job_id: Uuid,
     pub site_id: Uuid,
     pub url: String,
-    pub page_id: Uuid,
+    pub status: CrawlJobStatus,
+    pub page_id: Option<Uuid>,
     pub pages_indexed: usize,
     pub chunks_indexed: usize,
+    pub error_message: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CrawlJobStatus {
+    Pending,
+    Running,
+    Succeeded,
+    Failed,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
