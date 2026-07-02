@@ -130,6 +130,35 @@ Request:
 }
 ```
 
+## Internal Indexing
+
+```txt
+POST /v1/index/pages
+```
+
+Request:
+
+```json
+{
+  "site_id": "018f0000-0000-7000-9000-000000000001",
+  "url": "https://docs.acme.example/install",
+  "title": "Install Perch",
+  "content": "<main>Install Perch with one script tag...</main>",
+  "content_type": "html"
+}
+```
+
+Returns:
+
+```json
+{
+  "page_id": "018f0000-0000-7000-9000-000000000005",
+  "chunks_indexed": 3
+}
+```
+
+The current endpoint is a direct ingestion API. Crawling, sitemap discovery, robots policy, and queue-based jobs remain separate indexer work.
+
 Returns:
 
 ```json

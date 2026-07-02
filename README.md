@@ -90,6 +90,9 @@ flowchart LR
 Current implemented path:
 
 ```txt
+indexer /v1/index/pages
+  -> Postgres site_pages and page_chunks
+
 Next.js demo widget
   -> gateway /v1/widget/config
   -> gateway /v1/widget/chat
@@ -156,6 +159,16 @@ Current services:
 - `perch-retrieval`
 
 Each service exposes a minimal `/health` endpoint and is ready for the first real application use cases.
+
+Current backend product endpoints:
+
+```txt
+POST /v1/sites
+POST /v1/index/pages
+GET  /v1/widget/config
+POST /v1/widget/chat
+POST /v1/answer
+```
 
 ## Local Infrastructure
 

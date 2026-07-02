@@ -1087,10 +1087,13 @@ dependencies = [
  "perch-storage",
  "perch-types",
  "rag-core",
+ "sqlx",
+ "thiserror",
  "tokio",
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

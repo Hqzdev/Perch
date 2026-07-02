@@ -202,6 +202,14 @@ curl -X POST http://localhost:18080/v1/widget/chat \
 
 Retrieval reads from `page_chunks`. Until the indexer writes real chunks, responses fall back to a clear no-indexed-context message.
 
+Index a page directly:
+
+```sh
+curl -X POST http://localhost:18081/v1/index/pages \
+  -H 'content-type: application/json' \
+  -d '{"site_id":"...","url":"https://docs.acme.example/install","title":"Install Perch","content":"Install Perch with one script tag.","content_type":"text"}'
+```
+
 Connect the Next.js demo widget to Gateway:
 
 ```sh
