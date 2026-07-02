@@ -37,6 +37,9 @@ curl -fsS "$GATEWAY_URL/ready" >/dev/null
 curl -fsS "$INDEXER_URL/ready" >/dev/null
 curl -fsS "$RETRIEVAL_URL/ready" >/dev/null
 curl -fsS "$QDRANT_URL/readyz" >/dev/null
+widget_script_response="$(curl -fsS "$GATEWAY_URL/widget/perch.js")"
+assert_text_contains "$widget_script_response" "data-perch-key"
+assert_text_contains "$widget_script_response" "/v1/widget/chat"
 node -e "if (process.argv[1] !== '401') process.exit(1)" "$(curl -s -o /dev/null -w "%{http_code}" "$GATEWAY_URL/v1/sites")"
 
 site_response="$(post_json "$GATEWAY_URL/v1/sites" "{\"organization_name\":\"Smoke Demo $RUN_ID\",\"site_name\":\"Perch Smoke Demo $RUN_ID\",\"origin\":\"$ORIGIN\"}")"
@@ -72,6 +75,7 @@ assert_text_contains "$sites_response" "$site_id"
 site_detail_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$site_detail_response" "$script_key"
 assert_text_contains "$site_detail_response" "data-perch-key"
+assert_text_contains "$site_detail_response" "/widget/perch.js"
 
 pages_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/pages" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$pages_response" "$ORIGIN/docs/install"

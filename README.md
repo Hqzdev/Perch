@@ -25,6 +25,7 @@ Implemented today:
 - Rust Gateway, Indexer, and Retrieval services
 - Postgres-backed organizations, sites, pages, chunks, crawl jobs, conversations, and messages
 - site creation and widget config resolved by public widget key
+- standalone framework-free widget script served by Gateway
 - single-page crawl jobs with persisted status
 - direct page ingestion for deterministic demos
 - retrieval over Qdrant vectors with Postgres keyword fallback and source citations
@@ -75,7 +76,7 @@ Perch V1 focuses on public website pages:
 - extract clean page text
 - chunk and embed website content
 - retrieve relevant source chunks for visitor questions
-- stream answers through an embeddable widget
+- answer questions through an embeddable widget
 - show citations linked to source pages
 - isolate each customer by tenant and allowed domains
 
@@ -160,7 +161,8 @@ gateway /v1/sites/:siteId/pages
   -> Postgres site_pages and page_chunks
   -> Qdrant perch_chunks vectors
 
-Next.js demo widget
+Standalone script widget
+  -> gateway /widget/perch.js
   -> gateway /v1/widget/config
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
@@ -237,6 +239,12 @@ The dashboard preview is available at:
 http://localhost:3000/dashboard
 ```
 
+The standalone widget demo page is available after creating a site and copying its public widget key:
+
+```txt
+http://localhost:3000/widget-demo?key=pk_dev_...
+```
+
 It reads Gateway dashboard endpoints directly. It is intentionally a dev dashboard, not production auth; the next production step is real organization membership and session-backed access control.
 
 Owner routes require a development owner token:
@@ -268,6 +276,7 @@ Readiness is dependency-aware. Gateway requires Postgres. Indexer and Retrieval 
 Current backend product endpoints:
 
 ```txt
+GET  /widget/perch.js
 GET  /v1/sites
 POST /v1/sites
 GET  /v1/sites/:siteId

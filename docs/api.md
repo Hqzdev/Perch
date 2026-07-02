@@ -1,6 +1,6 @@
 # API Design
 
-This document captures intended API contracts. Exact routes can change before the backend is implemented.
+This document captures the implemented local portfolio API contracts and the near-term planned routes.
 
 ## Service Operations
 
@@ -42,6 +42,14 @@ When a required dependency is unavailable, `/ready` returns HTTP 503 and marks t
 
 ## Public Widget
 
+### Get Widget Script
+
+```txt
+GET /widget/perch.js
+```
+
+Returns the standalone framework-free widget script served by Gateway.
+
 ### Get Widget Configuration
 
 ```txt
@@ -60,7 +68,7 @@ Returns:
   },
   "features": {
     "citations": true,
-    "streaming": true
+    "streaming": false
   }
 }
 ```
@@ -212,7 +220,7 @@ Returns:
     "last_indexed_at": "2026-07-02 10:17:00.000000+00",
     "created_at": "2026-07-02 10:00:00.000000+00"
   },
-  "install_snippet": "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"pk_dev_...\"></script>"
+  "install_snippet": "<script src=\"http://localhost:18080/widget/perch.js\" data-perch-key=\"pk_dev_...\" data-perch-gateway=\"http://localhost:18080\"></script>"
 }
 ```
 
@@ -262,15 +270,9 @@ Read crawl job status:
 GET /v1/sites/:siteId/crawl-jobs/:jobId
 ```
 
-## Dashboard
+## Site Bootstrap
 
-Dashboard routes require authenticated sessions.
-
-Implemented bootstrap routes:
-
-- `POST /v1/sites`
-- `POST /v1/sites/:siteId/pages`
-- `POST /v1/sites/:siteId/crawl-jobs`
+Create, crawl, and indexing routes use the same development owner token as the dashboard routes.
 
 Create site request:
 
@@ -296,9 +298,6 @@ Create site response:
 
 Planned routes:
 
-- `GET /v1/sites`
-- `GET /v1/sites/:siteId`
-- `GET /v1/sites/:siteId/crawl-jobs/:jobId`
 - `GET /v1/sites/:siteId/questions`
 - `PATCH /v1/sites/:siteId/widget-config`
 

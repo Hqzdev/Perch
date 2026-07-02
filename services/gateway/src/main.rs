@@ -19,7 +19,7 @@ use crate::interfaces::http::{
     crawl_job_status_handler, crawl_site_page_handler, create_site_handler, health_handler,
     index_site_page_handler, list_site_conversations_handler, list_site_pages_handler,
     list_sites_handler, readiness_handler, site_detail_handler, widget_chat_handler,
-    widget_config_handler, HttpState,
+    widget_config_handler, widget_script_handler, HttpState,
 };
 
 #[tokio::main]
@@ -37,6 +37,10 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))
         .route("/ready", axum::routing::get(readiness_handler))
+        .route(
+            "/widget/perch.js",
+            axum::routing::get(widget_script_handler),
+        )
         .route(
             "/v1/sites",
             axum::routing::get(list_sites_handler).post(create_site_handler),

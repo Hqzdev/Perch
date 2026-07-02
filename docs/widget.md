@@ -5,7 +5,19 @@ The Perch widget should be framework-free and embeddable on ordinary websites.
 ## Install Snippet
 
 ```html
-<script src="https://cdn.perch.ai/widget.js" data-perch-key="pk_live_..."></script>
+<script src="http://localhost:18080/widget/perch.js" data-perch-key="pk_dev_..." data-perch-gateway="http://localhost:18080"></script>
+```
+
+The local portfolio build serves the framework-free widget script from Gateway:
+
+```txt
+GET /widget/perch.js
+```
+
+The demo install page is:
+
+```txt
+http://localhost:3000/widget-demo?key=pk_dev_...
 ```
 
 The widget configuration is resolved through:
@@ -23,7 +35,7 @@ The browser origin must match the site origin registered in Gateway.
 - isolated styles
 - responsive panel
 - accessible controls
-- streaming answers
+- non-streaming cited answers
 - visible citations
 - error state
 - loading state

@@ -14,6 +14,12 @@ Run the portfolio demo:
 
 The script creates a site, indexes one source page through Gateway, asks the widget chat endpoint a question, and prints the grounded answer plus citations.
 
+Open the script-tag widget demo after copying the printed `script_key`:
+
+```txt
+http://localhost:3000/widget-demo?key=pk_dev_...
+```
+
 Run the smoke test when you need a failing proof instead of a printed demo:
 
 ```sh
@@ -31,6 +37,8 @@ script
   -> indexer /v1/index/pages
   -> Postgres page_chunks
   -> Qdrant perch_chunks vectors
+  -> gateway /widget/perch.js
+  -> browser widget
   -> gateway /v1/widget/chat
   -> retrieval /v1/answer
   -> Qdrant vector search

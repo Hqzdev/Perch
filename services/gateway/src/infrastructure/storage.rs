@@ -328,7 +328,7 @@ fn integer_from_row(
 
 fn install_snippet(script_key: &str) -> String {
     format!(
-        "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"{}\"></script>",
+        "<script src=\"http://localhost:18080/widget/perch.js\" data-perch-key=\"{}\" data-perch-gateway=\"http://localhost:18080\"></script>",
         script_key
     )
 }

@@ -5,6 +5,7 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 COPY services ./services
+COPY apps/widget ./apps/widget
 
 RUN cargo build --release -p perch-gateway
 

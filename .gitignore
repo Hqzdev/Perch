@@ -8,6 +8,9 @@ apps/**/node_modules/
 apps/**/.next/
 next-env.d.ts
 dist/
+!apps/widget/
+!apps/widget/dist/
+!apps/widget/dist/perch.js
 build/
 coverage/
 out/

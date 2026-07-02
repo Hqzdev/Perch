@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    http::{header, HeaderMap, StatusCode},
     response::{IntoResponse, Response},
     Json,
 };
@@ -18,6 +18,8 @@ use serde::Deserialize;
 use crate::application::sites::{SiteService, SiteServiceError};
 use crate::domain::messages::{AssistantAnswer, VisitorMessage};
 use crate::domain::sites::{NewSite, Site};
+
+const WIDGET_SCRIPT: &str = include_str!("../../../../../apps/widget/dist/perch.js");
 
 #[derive(Clone)]
 pub struct HttpState {
@@ -77,6 +79,16 @@ pub async fn health_handler(State(state): State<HttpState>) -> Json<HealthRespon
         service: state.settings.service.name,
         status: ServiceStatus::Ok,
     })
+}
+
+pub async fn widget_script_handler() -> impl IntoResponse {
+    (
+        [(
+            header::CONTENT_TYPE,
+            "application/javascript; charset=utf-8",
+        )],
+        WIDGET_SCRIPT,
+    )
 }
 
 pub async fn readiness_handler(
