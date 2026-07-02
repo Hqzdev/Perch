@@ -123,8 +123,11 @@ pub async fn readiness_handler(
 
 pub async fn create_site_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Json(request): Json<CreateSiteRequest>,
 ) -> Result<(StatusCode, Json<SiteResponse>), ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let site = state
         .site_service
         .create_site(NewSite::new(
@@ -140,7 +143,10 @@ pub async fn create_site_handler(
 
 pub async fn list_sites_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
 ) -> Result<Json<Vec<DashboardSiteSummary>>, ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let sites = state
         .site_service
         .dashboard_sites()
@@ -152,8 +158,11 @@ pub async fn list_sites_handler(
 
 pub async fn site_detail_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path(site_id): Path<uuid::Uuid>,
 ) -> Result<Json<DashboardSiteDetail>, ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let site = state
         .site_service
         .dashboard_site(site_id)
@@ -165,8 +174,11 @@ pub async fn site_detail_handler(
 
 pub async fn list_site_pages_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path(site_id): Path<uuid::Uuid>,
 ) -> Result<Json<Vec<DashboardPageSummary>>, ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let pages = state
         .site_service
         .dashboard_pages(site_id)
@@ -178,8 +190,11 @@ pub async fn list_site_pages_handler(
 
 pub async fn list_site_conversations_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path(site_id): Path<uuid::Uuid>,
 ) -> Result<Json<Vec<DashboardConversationSummary>>, ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let conversations = state
         .site_service
         .dashboard_conversations(site_id)
@@ -191,9 +206,12 @@ pub async fn list_site_conversations_handler(
 
 pub async fn index_site_page_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path(site_id): Path<uuid::Uuid>,
     Json(request): Json<IndexSitePageRequest>,
 ) -> Result<(StatusCode, Json<IndexPageResponse>), ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let page = state
         .site_service
         .index_site_page(site_id, request)
@@ -205,9 +223,12 @@ pub async fn index_site_page_handler(
 
 pub async fn crawl_site_page_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path(site_id): Path<uuid::Uuid>,
     Json(request): Json<CrawlSiteRequest>,
 ) -> Result<(StatusCode, Json<CrawlJobResponse>), ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let response = state
         .site_service
         .crawl_site_page(site_id, request)
@@ -219,8 +240,11 @@ pub async fn crawl_site_page_handler(
 
 pub async fn crawl_job_status_handler(
     State(state): State<HttpState>,
+    headers: HeaderMap,
     Path((site_id, job_id)): Path<(uuid::Uuid, uuid::Uuid)>,
 ) -> Result<Json<CrawlJobResponse>, ApiError> {
+    authorize_owner(&state, &headers)?;
+
     let response = state
         .site_service
         .crawl_job(site_id, job_id)
@@ -298,6 +322,27 @@ fn widget_chat_response(answer: AssistantAnswer) -> WidgetChatResponse {
             })
             .collect(),
     }
+}
+
+fn authorize_owner(state: &HttpState, headers: &HeaderMap) -> Result<(), ApiError> {
+    let expected = state.settings.owner_access.token.as_str();
+    let direct_token = headers
+        .get("x-perch-owner-token")
+        .and_then(|value| value.to_str().ok());
+    let bearer_token = headers
+        .get("authorization")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "));
+
+    if direct_token == Some(expected) || bearer_token == Some(expected) {
+        return Ok(());
+    }
+
+    Err(ApiError::new(
+        StatusCode::UNAUTHORIZED,
+        "owner_auth_required",
+        "A valid owner token is required.",
+    ))
 }
 
 fn api_error_from_site_error(error: SiteServiceError) -> ApiError {

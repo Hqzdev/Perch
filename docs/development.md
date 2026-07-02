@@ -71,6 +71,7 @@ PERCH_REDIS_URL=redis://127.0.0.1:6380
 PERCH_QDRANT_URL=http://127.0.0.1:6335
 PERCH_INDEXER_URL=http://127.0.0.1:8081
 PERCH_RETRIEVAL_URL=http://127.0.0.1:8082
+PERCH_OWNER_TOKEN=perch_dev_owner_token
 ```
 
 Health endpoints:

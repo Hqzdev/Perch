@@ -18,6 +18,7 @@ pub struct RuntimeSettings {
     pub services: UpstreamServiceSettings,
     pub vector_search: VectorSearchSettings,
     pub llm: LlmSettings,
+    pub owner_access: OwnerAccessSettings,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,6 +47,11 @@ pub struct LlmSettings {
     pub model: String,
     pub api_key: Option<String>,
     pub base_url: Url,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OwnerAccessSettings {
+    pub token: String,
 }
 
 #[derive(Debug, Error)]
@@ -85,6 +91,7 @@ impl RuntimeSettings {
             services: UpstreamServiceSettings::from_env()?,
             vector_search: VectorSearchSettings::from_env()?,
             llm: LlmSettings::from_env()?,
+            owner_access: OwnerAccessSettings::from_env(),
         })
     }
 }
@@ -138,6 +145,15 @@ impl LlmSettings {
 
     pub fn enabled(&self) -> bool {
         self.provider != "disabled" && self.api_key.is_some()
+    }
+}
+
+impl OwnerAccessSettings {
+    pub fn from_env() -> Self {
+        Self {
+            token: env::var("PERCH_OWNER_TOKEN")
+                .unwrap_or_else(|_| "perch_dev_owner_token".to_string()),
+        }
     }
 }
 

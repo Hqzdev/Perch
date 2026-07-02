@@ -63,6 +63,7 @@ services:
       PERCH_QDRANT_COLLECTION: perch_chunks
       PERCH_INDEXER_URL: http://indexer:8081
       PERCH_RETRIEVAL_URL: http://retrieval:8082
+      PERCH_OWNER_TOKEN: perch_dev_owner_token
       RUST_LOG: info
     ports:
       - "${PERCH_GATEWAY_PORT:-18080}:8080"

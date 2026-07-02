@@ -185,7 +185,7 @@ The current endpoint is a direct ingestion API. Crawling, sitemap discovery, rob
 
 ## Dashboard
 
-The dashboard API is a development-facing owner view. It is intentionally unauthenticated in this portfolio prototype and must not be treated as production access control.
+The dashboard API is a development-facing owner view. It uses `PERCH_OWNER_TOKEN` through `x-perch-owner-token` or `Authorization: Bearer ...`. This is portfolio-grade owner access, not production organization membership.
 
 ```txt
 GET /v1/sites

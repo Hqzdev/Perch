@@ -239,6 +239,14 @@ http://localhost:3000/dashboard
 
 It reads Gateway dashboard endpoints directly. It is intentionally a dev dashboard, not production auth; the next production step is real organization membership and session-backed access control.
 
+Owner routes require a development owner token:
+
+```sh
+PERCH_OWNER_TOKEN=perch_dev_owner_token
+```
+
+Send it as `x-perch-owner-token` or `Authorization: Bearer ...`. Widget config and chat remain public but origin-checked.
+
 ## Rust Workspace
 
 Check the backend workspace:

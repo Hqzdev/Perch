@@ -6,6 +6,7 @@ INDEXER_URL="${INDEXER_URL:-http://localhost:18081}"
 RETRIEVAL_URL="${RETRIEVAL_URL:-http://localhost:18082}"
 QDRANT_URL="${QDRANT_URL:-http://localhost:6335}"
 QDRANT_COLLECTION="${QDRANT_COLLECTION:-perch_chunks}"
+OWNER_TOKEN="${OWNER_TOKEN:-perch_dev_owner_token}"
 RUN_ID="${RUN_ID:-$(date +%s)}"
 ORIGIN="https://smoke-$RUN_ID.perch.local"
 
@@ -28,6 +29,7 @@ assert_text_contains() {
 post_json() {
   curl -fsS "$1" \
     -H "content-type: application/json" \
+    -H "x-perch-owner-token: $OWNER_TOKEN" \
     -d "$2"
 }
 
@@ -35,6 +37,7 @@ curl -fsS "$GATEWAY_URL/ready" >/dev/null
 curl -fsS "$INDEXER_URL/ready" >/dev/null
 curl -fsS "$RETRIEVAL_URL/ready" >/dev/null
 curl -fsS "$QDRANT_URL/readyz" >/dev/null
+node -e "if (process.argv[1] !== '401') process.exit(1)" "$(curl -s -o /dev/null -w "%{http_code}" "$GATEWAY_URL/v1/sites")"
 
 site_response="$(post_json "$GATEWAY_URL/v1/sites" "{\"organization_name\":\"Smoke Demo $RUN_ID\",\"site_name\":\"Perch Smoke Demo $RUN_ID\",\"origin\":\"$ORIGIN\"}")"
 assert_json_field "$site_response" id
@@ -63,17 +66,17 @@ chat_response="$(curl -fsS "$GATEWAY_URL/v1/widget/chat" \
 assert_json_field "$chat_response" answer
 assert_text_contains "$chat_response" "$ORIGIN/docs/install"
 
-sites_response="$(curl -fsS "$GATEWAY_URL/v1/sites")"
+sites_response="$(curl -fsS "$GATEWAY_URL/v1/sites" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$sites_response" "$site_id"
 
-site_detail_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id")"
+site_detail_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$site_detail_response" "$script_key"
 assert_text_contains "$site_detail_response" "data-perch-key"
 
-pages_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/pages")"
+pages_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/pages" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$pages_response" "$ORIGIN/docs/install"
 
-conversations_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/conversations")"
+conversations_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/conversations" -H "x-perch-owner-token: $OWNER_TOKEN")"
 assert_text_contains "$conversations_response" "smoke-$RUN_ID"
 
 echo "Smoke test passed"

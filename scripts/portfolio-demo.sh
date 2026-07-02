@@ -2,6 +2,7 @@
 set -euo pipefail
 
 GATEWAY_URL="${GATEWAY_URL:-http://localhost:18080}"
+OWNER_TOKEN="${OWNER_TOKEN:-perch_dev_owner_token}"
 
 json_field() {
   node -e "const data = JSON.parse(process.argv[1]); console.log(data[process.argv[2]] ?? '')" "$1" "$2"
@@ -10,6 +11,7 @@ json_field() {
 post_json() {
   curl -fsS "$1" \
     -H "content-type: application/json" \
+    -H "x-perch-owner-token: $OWNER_TOKEN" \
     -d "$2"
 }
 

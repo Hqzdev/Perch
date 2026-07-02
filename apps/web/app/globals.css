@@ -770,6 +770,11 @@ body > div section [style*="border-radius:18px"]:hover {
   padding: 18px;
 }
 
+.dashboard-actions-panel {
+  display: grid;
+  gap: 14px;
+}
+
 .dashboard-panel-header {
   display: flex;
   align-items: center;
@@ -791,6 +796,63 @@ body > div section [style*="border-radius:18px"]:hover {
   color: #46564f;
   font-size: 12px;
   font-weight: 750;
+}
+
+.dashboard-form {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid #efede3;
+  border-radius: 8px;
+  background: #fcfbf7;
+}
+
+.dashboard-form strong {
+  font-size: 14px;
+}
+
+.dashboard-form label {
+  display: grid;
+  gap: 6px;
+  color: #68756f;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.dashboard-form input,
+.dashboard-form textarea {
+  width: 100%;
+  border: 1px solid #d8d5c8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #14241d;
+  font: inherit;
+  font-size: 14px;
+  padding: 10px 11px;
+}
+
+.dashboard-form textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.dashboard-form button {
+  min-height: 38px;
+  border: 1px solid #14241d;
+  border-radius: 8px;
+  background: #14241d;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.dashboard-form button:disabled {
+  border-color: #d8d5c8;
+  background: #e7e4d8;
+  color: #8a968f;
+  cursor: not-allowed;
 }
 
 .dashboard-install pre {
@@ -959,7 +1021,7 @@ body > div section [style*="border-radius:18px"]:hover {
   }
 
   .dashboard-nav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .dashboard-layout,

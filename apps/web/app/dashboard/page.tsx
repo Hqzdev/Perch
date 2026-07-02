@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { askTestQuestionAction, createSiteAction, indexPageAction } from "./actions";
 import { InstallSnippetButton } from "./InstallSnippetButton";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +69,7 @@ export default async function DashboardPage() {
           <a data-active="true" href="#overview">Overview</a>
           <a href="#install">Install</a>
           <a href="#pages">Pages</a>
+          <a href="#actions">Actions</a>
           <a href="#conversations">Conversations</a>
         </nav>
         <div className="dashboard-sidebar-footer">
@@ -108,6 +110,68 @@ export default async function DashboardPage() {
         </section>
 
         <section className="dashboard-layout">
+          <article className="dashboard-panel dashboard-actions-panel" id="actions">
+            <div className="dashboard-panel-header">
+              <div>
+                <p className="dashboard-eyebrow">Owner actions</p>
+                <h2>Create and index</h2>
+              </div>
+              <span className="dashboard-pill">dev auth</span>
+            </div>
+            <form action={createSiteAction} className="dashboard-form">
+              <strong>Create site</strong>
+              <label>
+                Organization
+                <input name="organization_name" placeholder="Portfolio Demo" required />
+              </label>
+              <label>
+                Site name
+                <input name="site_name" placeholder="Perch Docs" required />
+              </label>
+              <label>
+                Origin
+                <input name="origin" placeholder="https://docs.example.com" required type="url" />
+              </label>
+              <button type="submit">Create site</button>
+            </form>
+            <form action={indexPageAction} className="dashboard-form">
+              <input name="site_id" type="hidden" value={activeSite.id} />
+              <strong>Index page</strong>
+              <label>
+                URL
+                <input name="url" placeholder={`${activeSite.origin}/docs/install`} required type="url" />
+              </label>
+              <label>
+                Title
+                <input name="title" placeholder="Install Perch" />
+              </label>
+              <label>
+                Content
+                <textarea
+                  name="content"
+                  placeholder="Paste page text that Perch should answer from."
+                  required
+                  rows={5}
+                />
+              </label>
+              <button type="submit" disabled={!data.connected}>
+                Index page
+              </button>
+            </form>
+            <form action={askTestQuestionAction} className="dashboard-form">
+              <input name="script_key" type="hidden" value={activeSite.script_key} />
+              <input name="origin" type="hidden" value={activeSite.origin} />
+              <strong>Ask test question</strong>
+              <label>
+                Question
+                <input name="message" placeholder="How do I install Perch?" required />
+              </label>
+              <button type="submit" disabled={!data.connected}>
+                Ask widget
+              </button>
+            </form>
+          </article>
+
           <article className="dashboard-panel dashboard-install" id="install">
             <div className="dashboard-panel-header">
               <div>
@@ -218,7 +282,10 @@ async function loadDashboardData(): Promise<DashboardData> {
 async function fetchJson<T>(path: string): Promise<T | null> {
   try {
     const response = await fetch(`${gatewayUrl}${path}`, {
-      cache: "no-store"
+      cache: "no-store",
+      headers: {
+        "x-perch-owner-token": process.env.PERCH_OWNER_TOKEN ?? "perch_dev_owner_token"
+      }
     });
 
     if (!response.ok) {
