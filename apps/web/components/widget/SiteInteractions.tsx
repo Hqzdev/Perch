@@ -15,9 +15,45 @@ function setFaqState(item: HTMLElement, open: boolean) {
   indicator.style.color = open ? "#ffffff" : "#5d7550";
 }
 
+function formatCount(value: number, format?: string) {
+  if (format === "comma") {
+    return Math.round(value).toLocaleString("en-US");
+  }
+
+  if (value % 1 !== 0) {
+    return value.toFixed(1);
+  }
+
+  return Math.round(value).toString();
+}
+
 export function SiteInteractions() {
   useEffect(() => {
     const faqQuestions = [...document.querySelectorAll<HTMLButtonElement>("[data-faq-question]")];
+    const counters = [...document.querySelectorAll<HTMLElement>("[data-countup]")];
+    const animations = counters.map((counter) => {
+      const target = Number(counter.dataset.countup);
+      const format = counter.dataset.fmt;
+      const startedAt = performance.now();
+      const duration = 900;
+      let frame = 0;
+
+      const tick = (time: number) => {
+        const progress = Math.min((time - startedAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        counter.textContent = formatCount(target * eased, format);
+
+        if (progress < 1) {
+          frame = requestAnimationFrame(tick);
+        }
+      };
+
+      frame = requestAnimationFrame(tick);
+
+      return () => {
+        cancelAnimationFrame(frame);
+      };
+    });
 
     const faqHandlers = faqQuestions.map((question) => {
       const handler = () => {
@@ -41,6 +77,7 @@ export function SiteInteractions() {
 
     return () => {
       faqHandlers.forEach((removeHandler) => removeHandler());
+      animations.forEach((removeAnimation) => removeAnimation());
     };
   }, []);
 

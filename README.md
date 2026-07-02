@@ -12,6 +12,8 @@ Perch is built around one narrow promise: visitors should be able to ask a websi
 
 ![Perch cited answer demo](apps/web/public/screenshots/perch-demo-section.png)
 
+![Perch mobile website](apps/web/public/screenshots/perch-mobile.png)
+
 ## Status
 
 Perch is a portfolio-grade SaaS architecture prototype. It is designed to show clean service boundaries, a working local demo, and honest RAG product mechanics without pretending to be production infrastructure.

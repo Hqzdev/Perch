@@ -5,6 +5,19 @@ import { createPortal } from "react-dom";
 
 const snippet = "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"pk_live_8f2c...a91\"></script>";
 
+async function copySnippetText() {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(snippet);
+      return true;
+    } catch {
+      return copyWithField();
+    }
+  }
+
+  return copyWithField();
+}
+
 function copyWithField() {
   const field = document.createElement("textarea");
   field.value = snippet;
@@ -32,14 +45,7 @@ export function CopySnippetButton() {
   function copySnippet() {
     setLabel("copied");
     window.setTimeout(() => setLabel("copy"), 1400);
-
-    if (copyWithField()) {
-      return;
-    }
-
-    if (navigator.clipboard?.writeText) {
-      void navigator.clipboard.writeText(snippet).catch(() => undefined);
-    }
+    void copySnippetText();
   }
 
   if (!target) {
@@ -51,7 +57,6 @@ export function CopySnippetButton() {
       className="perch-copy-button"
       type="button"
       onClick={copySnippet}
-      onPointerDown={copySnippet}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           copySnippet();

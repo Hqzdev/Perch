@@ -441,6 +441,118 @@ body > div section [style*="border-radius:18px"]:hover {
 }
 
 @media (max-width: 640px) {
+  body > div {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body > div > nav {
+    align-items: flex-start !important;
+    padding: 12px 18px !important;
+  }
+
+  nav {
+    align-items: center !important;
+    padding: 12px 18px !important;
+  }
+
+  nav > div:nth-of-type(1) {
+    max-width: 44vw;
+    gap: 14px !important;
+    overflow: hidden;
+  }
+
+  nav > div:nth-of-type(1) a:nth-child(n + 3),
+  nav > div:nth-of-type(2) a {
+    display: none !important;
+  }
+
+  body > div > nav > div:nth-child(2) {
+    max-width: 46vw;
+    gap: 14px !important;
+    overflow: hidden;
+  }
+
+  body > div > nav > div:nth-child(2) a:nth-child(n + 3),
+  body > div > nav > div:nth-child(3) a:first-child {
+    display: none !important;
+  }
+
+  body > div > nav > div:nth-child(3) a:last-child {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+
+  body > div > section {
+    max-width: 100vw;
+  }
+
+  body > div > section h1 {
+    max-width: 100%;
+    font-size: clamp(40px, 14vw, 56px) !important;
+    overflow-wrap: anywhere;
+  }
+
+  body > div > section h2 {
+    overflow-wrap: anywhere;
+  }
+
+  body > div > section p {
+    max-width: 100%;
+  }
+
+  body > div > section a {
+    max-width: 100%;
+  }
+
+  body > div > section:first-of-type > div:first-child > div:nth-of-type(2) a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body > div > section:first-of-type > div:nth-child(2) {
+    min-width: 0;
+  }
+
+  body > div > section:first-of-type > div:nth-child(2) > div > div:nth-child(2) {
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    min-height: 300px !important;
+  }
+
+  body > div > section:first-of-type > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(3) {
+    right: 10px !important;
+    bottom: 10px !important;
+    width: min(280px, calc(100% - 20px)) !important;
+  }
+
+  body > div > section:first-of-type span[style*="acme-docs.com"] {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body > div > section:nth-of-type(6) > div:nth-child(2) > div:first-child {
+    flex-wrap: wrap;
+  }
+
+  body > div > section:nth-of-type(6) > div:nth-child(2) > div:first-child > span:last-child {
+    width: 100%;
+    margin-left: 0 !important;
+    overflow-x: auto;
+    padding-top: 4px;
+  }
+
+  body > div > section:nth-of-type(6) > div:nth-child(2) > div:nth-child(2) > div:first-child > div:first-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  body > div > section [style*="font-family:'IBM Plex Mono'"] {
+    overflow-wrap: anywhere;
+  }
+
   .perch-widget {
     right: 12px;
     bottom: 12px;
