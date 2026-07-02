@@ -21,6 +21,7 @@ Perch is a portfolio-grade SaaS architecture prototype. It is designed to show c
 Implemented today:
 
 - Next.js product site with an embedded widget demo
+- Next.js dashboard preview for site owners, install snippets, indexed pages, and conversations
 - Rust Gateway, Indexer, and Retrieval services
 - Postgres-backed organizations, sites, pages, chunks, crawl jobs, conversations, and messages
 - site creation and widget config resolved by public widget key
@@ -230,6 +231,14 @@ NEXT_PUBLIC_PERCH_GATEWAY_URL=http://localhost:18080
 NEXT_PUBLIC_PERCH_WIDGET_KEY=pk_dev_replace_after_running_demo
 ```
 
+The dashboard preview is available at:
+
+```txt
+http://localhost:3000/dashboard
+```
+
+It reads Gateway dashboard endpoints directly. It is intentionally a dev dashboard, not production auth; the next production step is real organization membership and session-backed access control.
+
 ## Rust Workspace
 
 Check the backend workspace:
@@ -251,8 +260,12 @@ Readiness is dependency-aware. Gateway requires Postgres. Indexer and Retrieval 
 Current backend product endpoints:
 
 ```txt
+GET  /v1/sites
 POST /v1/sites
+GET  /v1/sites/:siteId
+GET  /v1/sites/:siteId/pages
 POST /v1/sites/:siteId/pages
+GET  /v1/sites/:siteId/conversations
 POST /v1/sites/:siteId/crawl-jobs
 GET  /v1/sites/:siteId/crawl-jobs/:jobId
 GET  /v1/widget/config

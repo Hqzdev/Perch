@@ -53,6 +53,44 @@ pub struct SiteResponse {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DashboardSiteSummary {
+    pub id: Uuid,
+    pub organization_id: Uuid,
+    pub name: String,
+    pub origin: String,
+    pub script_key: String,
+    pub pages_indexed: usize,
+    pub conversations_count: usize,
+    pub last_indexed_at: Option<String>,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DashboardSiteDetail {
+    pub site: DashboardSiteSummary,
+    pub install_snippet: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DashboardPageSummary {
+    pub id: Uuid,
+    pub url: String,
+    pub title: Option<String>,
+    pub status: String,
+    pub chunks_indexed: usize,
+    pub last_indexed_at: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DashboardConversationSummary {
+    pub id: Uuid,
+    pub visitor_id: Option<String>,
+    pub messages_count: usize,
+    pub last_message_at: Option<String>,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WidgetConfigResponse {
     pub site_name: String,
     pub theme: WidgetTheme,

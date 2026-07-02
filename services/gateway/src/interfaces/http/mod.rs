@@ -7,10 +7,11 @@ use axum::{
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
-    CrawlJobResponse, CrawlSiteRequest, CreateSiteRequest, DependencyReadiness, DependencyStatus,
-    ErrorBody, ErrorResponse, HealthResponse, IndexPageResponse, IndexSitePageRequest,
-    ReadinessResponse, ServiceStatus, SiteResponse, WidgetChatRequest, WidgetChatResponse,
-    WidgetCitation, WidgetConfigResponse, WidgetFeatures, WidgetTheme,
+    CrawlJobResponse, CrawlSiteRequest, CreateSiteRequest, DashboardConversationSummary,
+    DashboardPageSummary, DashboardSiteDetail, DashboardSiteSummary, DependencyReadiness,
+    DependencyStatus, ErrorBody, ErrorResponse, HealthResponse, IndexPageResponse,
+    IndexSitePageRequest, ReadinessResponse, ServiceStatus, SiteResponse, WidgetChatRequest,
+    WidgetChatResponse, WidgetCitation, WidgetConfigResponse, WidgetFeatures, WidgetTheme,
 };
 use serde::Deserialize;
 
@@ -135,6 +136,57 @@ pub async fn create_site_handler(
         .map_err(api_error_from_site_error)?;
 
     Ok((StatusCode::CREATED, Json(site_response(site))))
+}
+
+pub async fn list_sites_handler(
+    State(state): State<HttpState>,
+) -> Result<Json<Vec<DashboardSiteSummary>>, ApiError> {
+    let sites = state
+        .site_service
+        .dashboard_sites()
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(sites))
+}
+
+pub async fn site_detail_handler(
+    State(state): State<HttpState>,
+    Path(site_id): Path<uuid::Uuid>,
+) -> Result<Json<DashboardSiteDetail>, ApiError> {
+    let site = state
+        .site_service
+        .dashboard_site(site_id)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(site))
+}
+
+pub async fn list_site_pages_handler(
+    State(state): State<HttpState>,
+    Path(site_id): Path<uuid::Uuid>,
+) -> Result<Json<Vec<DashboardPageSummary>>, ApiError> {
+    let pages = state
+        .site_service
+        .dashboard_pages(site_id)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(pages))
+}
+
+pub async fn list_site_conversations_handler(
+    State(state): State<HttpState>,
+    Path(site_id): Path<uuid::Uuid>,
+) -> Result<Json<Vec<DashboardConversationSummary>>, ApiError> {
+    let conversations = state
+        .site_service
+        .dashboard_conversations(site_id)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok(Json(conversations))
 }
 
 pub async fn index_site_page_handler(

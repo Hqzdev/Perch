@@ -22,6 +22,12 @@ Run locally:
 npm run dev
 ```
 
+Open the dashboard preview:
+
+```txt
+http://localhost:3000/dashboard
+```
+
 Build:
 
 ```sh

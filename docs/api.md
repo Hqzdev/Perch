@@ -183,6 +183,46 @@ Returns:
 
 The current endpoint is a direct ingestion API. Crawling, sitemap discovery, robots policy, and queue-based jobs remain separate indexer work.
 
+## Dashboard
+
+The dashboard API is a development-facing owner view. It is intentionally unauthenticated in this portfolio prototype and must not be treated as production access control.
+
+```txt
+GET /v1/sites
+```
+
+Returns site summaries with indexed page counts, conversation counts, widget keys, and last index timestamps.
+
+```txt
+GET /v1/sites/:siteId
+```
+
+Returns:
+
+```json
+{
+  "site": {
+    "id": "018f0000-0000-7000-9000-000000000001",
+    "organization_id": "018f0000-0000-7000-9000-000000000002",
+    "name": "Acme Docs",
+    "origin": "https://docs.acme.example",
+    "script_key": "pk_dev_...",
+    "pages_indexed": 12,
+    "conversations_count": 4,
+    "last_indexed_at": "2026-07-02 10:17:00.000000+00",
+    "created_at": "2026-07-02 10:00:00.000000+00"
+  },
+  "install_snippet": "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"pk_dev_...\"></script>"
+}
+```
+
+```txt
+GET /v1/sites/:siteId/pages
+GET /v1/sites/:siteId/conversations
+```
+
+These endpoints power the Next.js `/dashboard` preview and return indexed page rows plus recent conversation summaries.
+
 ## Crawl Jobs
 
 Gateway route:

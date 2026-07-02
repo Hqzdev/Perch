@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use perch_types::api::{
-    CrawlJobResponse, CrawlSiteRequest, IndexPageResponse, IndexSitePageRequest,
+    CrawlJobResponse, CrawlSiteRequest, DashboardConversationSummary, DashboardPageSummary,
+    DashboardSiteDetail, DashboardSiteSummary, IndexPageResponse, IndexSitePageRequest,
 };
 use thiserror::Error;
 use uuid::Uuid;
@@ -59,6 +60,53 @@ impl SiteService {
 
         self.repository
             .create_site(new_site)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn dashboard_sites(&self) -> Result<Vec<DashboardSiteSummary>, SiteServiceError> {
+        self.repository
+            .list_dashboard_sites()
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn dashboard_site(
+        &self,
+        site_id: Uuid,
+    ) -> Result<DashboardSiteDetail, SiteServiceError> {
+        self.repository
+            .dashboard_site(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)
+    }
+
+    pub async fn dashboard_pages(
+        &self,
+        site_id: Uuid,
+    ) -> Result<Vec<DashboardPageSummary>, SiteServiceError> {
+        self.repository
+            .find_by_id(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)?;
+
+        self.repository
+            .list_dashboard_pages(site_id)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn dashboard_conversations(
+        &self,
+        site_id: Uuid,
+    ) -> Result<Vec<DashboardConversationSummary>, SiteServiceError> {
+        self.repository
+            .find_by_id(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)?;
+
+        self.repository
+            .list_dashboard_conversations(site_id)
             .await
             .map_err(Into::into)
     }

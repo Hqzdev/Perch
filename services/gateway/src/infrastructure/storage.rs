@@ -1,4 +1,7 @@
 use perch_storage::Database;
+use perch_types::api::{
+    DashboardConversationSummary, DashboardPageSummary, DashboardSiteDetail, DashboardSiteSummary,
+};
 use sqlx::Row;
 use thiserror::Error;
 use uuid::Uuid;
@@ -88,6 +91,131 @@ impl SiteRepository {
         Ok(row.map(Self::site_from_row))
     }
 
+    pub async fn list_dashboard_sites(
+        &self,
+    ) -> Result<Vec<DashboardSiteSummary>, SiteRepositoryError> {
+        let rows = sqlx::query(
+            "
+            select
+                sites.id,
+                sites.organization_id,
+                sites.name,
+                sites.origin,
+                sites.script_key,
+                sites.created_at::text as created_at,
+                count(distinct site_pages.id)::bigint as pages_indexed,
+                count(distinct conversations.id)::bigint as conversations_count,
+                max(site_pages.last_indexed_at)::text as last_indexed_at
+            from sites
+            left join site_pages on site_pages.site_id = sites.id
+            left join conversations on conversations.site_id = sites.id
+            group by sites.id
+            order by sites.created_at desc
+            ",
+        )
+        .fetch_all(self.database.pool())
+        .await?;
+
+        rows.into_iter()
+            .map(Self::dashboard_site_from_row)
+            .collect()
+    }
+
+    pub async fn dashboard_site(
+        &self,
+        site_id: Uuid,
+    ) -> Result<Option<DashboardSiteDetail>, SiteRepositoryError> {
+        let row = sqlx::query(
+            "
+            select
+                sites.id,
+                sites.organization_id,
+                sites.name,
+                sites.origin,
+                sites.script_key,
+                sites.created_at::text as created_at,
+                count(distinct site_pages.id)::bigint as pages_indexed,
+                count(distinct conversations.id)::bigint as conversations_count,
+                max(site_pages.last_indexed_at)::text as last_indexed_at
+            from sites
+            left join site_pages on site_pages.site_id = sites.id
+            left join conversations on conversations.site_id = sites.id
+            where sites.id = $1
+            group by sites.id
+            ",
+        )
+        .bind(site_id)
+        .fetch_optional(self.database.pool())
+        .await?;
+
+        row.map(Self::dashboard_site_from_row)
+            .transpose()
+            .map(|summary| {
+                summary.map(|site| DashboardSiteDetail {
+                    install_snippet: install_snippet(&site.script_key),
+                    site,
+                })
+            })
+    }
+
+    pub async fn list_dashboard_pages(
+        &self,
+        site_id: Uuid,
+    ) -> Result<Vec<DashboardPageSummary>, SiteRepositoryError> {
+        let rows = sqlx::query(
+            "
+            select
+                site_pages.id,
+                site_pages.url,
+                site_pages.title,
+                site_pages.status,
+                site_pages.last_indexed_at::text as last_indexed_at,
+                count(page_chunks.id)::bigint as chunks_indexed
+            from site_pages
+            left join page_chunks on page_chunks.page_id = site_pages.id
+            where site_pages.site_id = $1
+            group by site_pages.id
+            order by site_pages.last_indexed_at desc nulls last, site_pages.created_at desc
+            ",
+        )
+        .bind(site_id)
+        .fetch_all(self.database.pool())
+        .await?;
+
+        rows.into_iter()
+            .map(Self::dashboard_page_from_row)
+            .collect()
+    }
+
+    pub async fn list_dashboard_conversations(
+        &self,
+        site_id: Uuid,
+    ) -> Result<Vec<DashboardConversationSummary>, SiteRepositoryError> {
+        let rows = sqlx::query(
+            "
+            select
+                conversations.id,
+                conversations.visitor_id,
+                conversations.created_at::text as created_at,
+                count(messages.id)::bigint as messages_count,
+                max(messages.created_at)::text as last_message_at
+            from conversations
+            left join messages on messages.conversation_id = conversations.id
+            where conversations.site_id = $1
+            group by conversations.id
+            order by max(messages.created_at) desc nulls last, conversations.created_at desc
+            limit 20
+            ",
+        )
+        .bind(site_id)
+        .fetch_all(self.database.pool())
+        .await?;
+
+        rows.into_iter()
+            .map(Self::dashboard_conversation_from_row)
+            .collect()
+    }
+
     pub async fn record_widget_exchange(
         &self,
         site_id: Uuid,
@@ -146,4 +274,61 @@ impl SiteRepository {
             script_key: row.get("script_key"),
         }
     }
+
+    fn dashboard_site_from_row(
+        row: sqlx::postgres::PgRow,
+    ) -> Result<DashboardSiteSummary, SiteRepositoryError> {
+        Ok(DashboardSiteSummary {
+            id: row.get("id"),
+            organization_id: row.get("organization_id"),
+            name: row.get("name"),
+            origin: row.get("origin"),
+            script_key: row.get("script_key"),
+            pages_indexed: integer_from_row(&row, "pages_indexed")?,
+            conversations_count: integer_from_row(&row, "conversations_count")?,
+            last_indexed_at: row.get("last_indexed_at"),
+            created_at: row.get("created_at"),
+        })
+    }
+
+    fn dashboard_page_from_row(
+        row: sqlx::postgres::PgRow,
+    ) -> Result<DashboardPageSummary, SiteRepositoryError> {
+        Ok(DashboardPageSummary {
+            id: row.get("id"),
+            url: row.get("url"),
+            title: row.get("title"),
+            status: row.get("status"),
+            chunks_indexed: integer_from_row(&row, "chunks_indexed")?,
+            last_indexed_at: row.get("last_indexed_at"),
+        })
+    }
+
+    fn dashboard_conversation_from_row(
+        row: sqlx::postgres::PgRow,
+    ) -> Result<DashboardConversationSummary, SiteRepositoryError> {
+        Ok(DashboardConversationSummary {
+            id: row.get("id"),
+            visitor_id: row.get("visitor_id"),
+            messages_count: integer_from_row(&row, "messages_count")?,
+            last_message_at: row.get("last_message_at"),
+            created_at: row.get("created_at"),
+        })
+    }
+}
+
+fn integer_from_row(
+    row: &sqlx::postgres::PgRow,
+    column: &str,
+) -> Result<usize, SiteRepositoryError> {
+    let value: i64 = row.get(column);
+
+    usize::try_from(value).map_err(|error| SiteRepositoryError::Serialization(error.to_string()))
+}
+
+fn install_snippet(script_key: &str) -> String {
+    format!(
+        "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"{}\"></script>",
+        script_key
+    )
 }

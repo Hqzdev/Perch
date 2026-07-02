@@ -63,6 +63,19 @@ chat_response="$(curl -fsS "$GATEWAY_URL/v1/widget/chat" \
 assert_json_field "$chat_response" answer
 assert_text_contains "$chat_response" "$ORIGIN/docs/install"
 
+sites_response="$(curl -fsS "$GATEWAY_URL/v1/sites")"
+assert_text_contains "$sites_response" "$site_id"
+
+site_detail_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id")"
+assert_text_contains "$site_detail_response" "$script_key"
+assert_text_contains "$site_detail_response" "data-perch-key"
+
+pages_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/pages")"
+assert_text_contains "$pages_response" "$ORIGIN/docs/install"
+
+conversations_response="$(curl -fsS "$GATEWAY_URL/v1/sites/$site_id/conversations")"
+assert_text_contains "$conversations_response" "smoke-$RUN_ID"
+
 echo "Smoke test passed"
 echo "Site: $site_id"
 echo "Chunks indexed: $chunks_indexed"
