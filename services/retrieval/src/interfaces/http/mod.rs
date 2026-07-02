@@ -2,7 +2,8 @@ use axum::{extract::State, http::StatusCode, Json};
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
-    DependencyReadiness, DependencyStatus, HealthResponse, ReadinessResponse, ServiceStatus,
+    DependencyReadiness, DependencyStatus, HealthResponse, ReadinessResponse,
+    RetrievalAnswerRequest, RetrievalAnswerResponse, ServiceStatus, WidgetCitation,
 };
 
 #[derive(Clone)]
@@ -62,6 +63,27 @@ pub async fn readiness_handler(
                     status: DependencyStatus::Configured,
                 },
             ],
+        }),
+    )
+}
+
+pub async fn answer_handler(
+    Json(request): Json<RetrievalAnswerRequest>,
+) -> (StatusCode, Json<RetrievalAnswerResponse>) {
+    let answer = format!(
+        "Perch searched the currently indexed context for {}. Retrieval is wired through the dedicated retrieval service; the next step is replacing this bootstrap answer with tenant-filtered chunks from Qdrant and Postgres. Question: {}",
+        request.site_name,
+        request.question.trim()
+    );
+
+    (
+        StatusCode::OK,
+        Json(RetrievalAnswerResponse {
+            answer,
+            citations: vec![WidgetCitation {
+                title: request.site_name,
+                url: request.site_origin,
+            }],
         }),
     )
 }

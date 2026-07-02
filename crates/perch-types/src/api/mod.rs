@@ -81,6 +81,20 @@ pub struct WidgetCitation {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RetrievalAnswerRequest {
+    pub site_id: Uuid,
+    pub site_name: String,
+    pub site_origin: String,
+    pub question: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RetrievalAnswerResponse {
+    pub answer: String,
+    pub citations: Vec<WidgetCitation>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WidgetTheme {
     pub accent_color: String,
     pub placement: String,

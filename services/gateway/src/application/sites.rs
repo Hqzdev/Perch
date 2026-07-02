@@ -2,13 +2,15 @@ use std::sync::Arc;
 
 use thiserror::Error;
 
-use crate::domain::messages::{AssistantAnswer, Citation, VisitorMessage};
+use crate::domain::messages::{AssistantAnswer, VisitorMessage};
 use crate::domain::sites::{NewSite, Site};
+use crate::infrastructure::retrieval::{RetrievalClient, RetrievalClientError};
 use crate::infrastructure::storage::{SiteRepository, SiteRepositoryError};
 
 #[derive(Debug, Clone)]
 pub struct SiteService {
     repository: Arc<SiteRepository>,
+    retrieval: Arc<RetrievalClient>,
 }
 
 #[derive(Debug, Error)]
@@ -25,12 +27,15 @@ pub enum SiteServiceError {
     NotFound,
     #[error("site storage failed: {0}")]
     Storage(#[from] SiteRepositoryError),
+    #[error("retrieval request failed: {0}")]
+    Retrieval(#[from] RetrievalClientError),
 }
 
 impl SiteService {
-    pub fn new(repository: SiteRepository) -> Self {
+    pub fn new(repository: SiteRepository, retrieval: RetrievalClient) -> Self {
         Self {
             repository: Arc::new(repository),
+            retrieval: Arc::new(retrieval),
         }
     }
 
@@ -78,28 +83,11 @@ impl SiteService {
         }
 
         let site = self.resolve_widget_site(script_key, origin).await?;
-        let draft = Self::draft_answer(&site, &message);
+        let draft = self.retrieval.answer(&site, &message).await?;
 
         self.repository
             .record_widget_exchange(site.id, message, draft)
             .await
             .map_err(Into::into)
-    }
-
-    fn draft_answer(site: &Site, message: &VisitorMessage) -> AssistantAnswer {
-        let content = format!(
-            "Perch received your question for {} and stored it for retrieval. The next backend stage will route this message through indexed page chunks and return a cited answer. Your question was: {}",
-            site.name, message.content
-        );
-
-        AssistantAnswer {
-            conversation_id: uuid::Uuid::nil(),
-            message_id: uuid::Uuid::nil(),
-            content,
-            citations: vec![Citation {
-                title: site.name.clone(),
-                url: site.origin.clone(),
-            }],
-        }
     }
 }

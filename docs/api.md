@@ -111,7 +111,38 @@ Returns:
 }
 ```
 
-This is a bootstrap JSON endpoint. Streaming and retrieval-backed answers are the next backend stage.
+Gateway validates the widget key and origin, then calls Retrieval through `POST /v1/answer`. The current Retrieval response is deterministic bootstrap output; tenant-filtered chunk retrieval and streaming are the next backend stage.
+
+## Internal Retrieval
+
+```txt
+POST /v1/answer
+```
+
+Request:
+
+```json
+{
+  "site_id": "018f0000-0000-7000-9000-000000000001",
+  "site_name": "Acme Docs",
+  "site_origin": "https://docs.acme.example",
+  "question": "How do I reset my API key?"
+}
+```
+
+Returns:
+
+```json
+{
+  "answer": "Perch searched the currently indexed context for Acme Docs...",
+  "citations": [
+    {
+      "title": "Acme Docs",
+      "url": "https://docs.acme.example"
+    }
+  ]
+}
+```
 
 ## Dashboard
 

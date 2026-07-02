@@ -63,6 +63,7 @@ PERCH_ENV=development
 PERCH_DATABASE_URL=postgres://perch:perch@127.0.0.1:5433/perch
 PERCH_REDIS_URL=redis://127.0.0.1:6380
 PERCH_QDRANT_URL=http://127.0.0.1:6335
+PERCH_RETRIEVAL_URL=http://127.0.0.1:8082
 ```
 
 Health endpoints:

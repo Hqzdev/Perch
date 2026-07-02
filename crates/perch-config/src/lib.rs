@@ -15,6 +15,7 @@ pub struct RuntimeSettings {
     pub service: ServiceSettings,
     pub environment: String,
     pub data_stores: DataStoreSettings,
+    pub services: UpstreamServiceSettings,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,6 +23,11 @@ pub struct DataStoreSettings {
     pub database_url: Url,
     pub redis_url: Url,
     pub qdrant_url: Url,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UpstreamServiceSettings {
+    pub retrieval_url: Url,
 }
 
 #[derive(Debug, Error)]
@@ -58,6 +64,7 @@ impl RuntimeSettings {
             service: ServiceSettings::from_env(name, default_port)?,
             environment: env::var("PERCH_ENV").unwrap_or_else(|_| "development".to_string()),
             data_stores: DataStoreSettings::from_env()?,
+            services: UpstreamServiceSettings::from_env()?,
         })
     }
 }
@@ -71,6 +78,14 @@ impl DataStoreSettings {
             )?,
             redis_url: parse_url("PERCH_REDIS_URL", "redis://127.0.0.1:6380")?,
             qdrant_url: parse_url("PERCH_QDRANT_URL", "http://127.0.0.1:6335")?,
+        })
+    }
+}
+
+impl UpstreamServiceSettings {
+    pub fn from_env() -> Result<Self, ConfigError> {
+        Ok(Self {
+            retrieval_url: parse_url("PERCH_RETRIEVAL_URL", "http://127.0.0.1:8082")?,
         })
     }
 }

@@ -59,11 +59,14 @@ services:
       PERCH_DATABASE_URL: postgres://perch:perch@postgres:5432/perch
       PERCH_REDIS_URL: redis://redis:6379
       PERCH_QDRANT_URL: http://qdrant:6333
+      PERCH_RETRIEVAL_URL: http://retrieval:8082
     ports:
       - "${PERCH_GATEWAY_PORT:-18080}:8080"
     depends_on:
       migrate:
         condition: service_completed_successfully
+      retrieval:
+        condition: service_started
       redis:
         condition: service_healthy
       qdrant:

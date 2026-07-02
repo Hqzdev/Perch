@@ -93,6 +93,7 @@ Current implemented path:
 Next.js demo widget
   -> gateway /v1/widget/config
   -> gateway /v1/widget/chat
+  -> retrieval /v1/answer
   -> Postgres conversations and messages
   -> deterministic bootstrap answer
 ```

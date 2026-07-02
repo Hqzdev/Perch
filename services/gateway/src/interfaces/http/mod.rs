@@ -238,5 +238,10 @@ fn api_error_from_site_error(error: SiteServiceError) -> ApiError {
             "storage_error",
             "The request could not be completed.",
         ),
+        SiteServiceError::Retrieval(_) => ApiError::new(
+            StatusCode::BAD_GATEWAY,
+            "retrieval_unavailable",
+            "The answer service is unavailable.",
+        ),
     }
 }

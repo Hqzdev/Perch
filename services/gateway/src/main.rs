@@ -12,6 +12,7 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::application::sites::SiteService;
+use crate::infrastructure::retrieval::RetrievalClient;
 use crate::infrastructure::storage::SiteRepository;
 use crate::interfaces::http::{
     create_site_handler, health_handler, readiness_handler, widget_chat_handler,
@@ -26,7 +27,8 @@ async fn main() -> anyhow::Result<()> {
 
     let settings = RuntimeSettings::from_env("gateway", 8080)?;
     let database = Database::new(&settings.data_stores.database_url)?;
-    let site_service = SiteService::new(SiteRepository::new(database.clone()));
+    let retrieval = RetrievalClient::new(settings.services.retrieval_url.clone());
+    let site_service = SiteService::new(SiteRepository::new(database.clone()), retrieval);
     let state = HttpState::new(settings.clone(), database, site_service);
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))

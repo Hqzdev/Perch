@@ -10,7 +10,7 @@ use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use tower_http::trace::TraceLayer;
 
-use crate::interfaces::http::{health_handler, readiness_handler, HttpState};
+use crate::interfaces::http::{answer_handler, health_handler, readiness_handler, HttpState};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -24,6 +24,7 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", axum::routing::get(health_handler))
         .route("/ready", axum::routing::get(readiness_handler))
+        .route("/v1/answer", axum::routing::post(answer_handler))
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
