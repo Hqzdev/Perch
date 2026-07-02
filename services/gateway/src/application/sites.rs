@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use perch_types::api::{IndexPageResponse, IndexSitePageRequest};
+use perch_types::api::{
+    CrawlJobResponse, CrawlSiteRequest, IndexPageResponse, IndexSitePageRequest,
+};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -114,6 +116,23 @@ impl SiteService {
 
         self.indexer
             .index_page(site_id, request)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub async fn crawl_site_page(
+        &self,
+        site_id: Uuid,
+        request: CrawlSiteRequest,
+    ) -> Result<CrawlJobResponse, SiteServiceError> {
+        let site = self
+            .repository
+            .find_by_id(site_id)
+            .await?
+            .ok_or(SiteServiceError::NotFound)?;
+
+        self.indexer
+            .crawl_page(site_id, request, site.origin)
             .await
             .map_err(Into::into)
     }

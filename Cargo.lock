@@ -1087,6 +1087,7 @@ dependencies = [
  "perch-storage",
  "perch-types",
  "rag-core",
+ "reqwest",
  "sqlx",
  "thiserror",
  "tokio",

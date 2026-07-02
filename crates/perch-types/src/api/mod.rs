@@ -112,6 +112,17 @@ pub struct IndexSitePageRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CrawlSiteRequest {
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CrawlJobRequest {
+    pub site_id: Uuid,
+    pub url: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum IndexContentType {
     Html,
@@ -121,6 +132,15 @@ pub enum IndexContentType {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IndexPageResponse {
     pub page_id: Uuid,
+    pub chunks_indexed: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CrawlJobResponse {
+    pub site_id: Uuid,
+    pub url: String,
+    pub page_id: Uuid,
+    pub pages_indexed: usize,
     pub chunks_indexed: usize,
 }
 

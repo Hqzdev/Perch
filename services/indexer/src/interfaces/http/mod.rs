@@ -7,8 +7,9 @@ use axum::{
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
-    DependencyReadiness, DependencyStatus, ErrorBody, ErrorResponse, HealthResponse,
-    IndexContentType, IndexPageRequest, IndexPageResponse, ReadinessResponse, ServiceStatus,
+    CrawlJobRequest, CrawlJobResponse, CrawlSiteRequest, DependencyReadiness, DependencyStatus,
+    ErrorBody, ErrorResponse, HealthResponse, IndexContentType, IndexPageRequest,
+    IndexPageResponse, ReadinessResponse, ServiceStatus,
 };
 
 use crate::application::indexing::{IndexingService, IndexingServiceError};
@@ -143,12 +144,41 @@ pub async fn index_page_handler(
     ))
 }
 
+pub async fn crawl_job_handler(
+    State(state): State<HttpState>,
+    Json(request): Json<CrawlJobRequest>,
+) -> Result<(StatusCode, Json<CrawlJobResponse>), ApiError> {
+    let response = state
+        .indexing_service
+        .crawl_page(
+            request.site_id,
+            CrawlSiteRequest {
+                url: Some(request.url.clone()),
+            },
+            request.url,
+        )
+        .await
+        .map_err(api_error_from_indexing_error)?;
+
+    Ok((StatusCode::CREATED, Json(response)))
+}
+
 fn api_error_from_indexing_error(error: IndexingServiceError) -> ApiError {
     match error {
         IndexingServiceError::InvalidPage => ApiError::new(
             StatusCode::BAD_REQUEST,
             "invalid_page",
             "The page payload is invalid.",
+        ),
+        IndexingServiceError::InvalidCrawlTarget => ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_crawl_target",
+            "The crawl target is invalid.",
+        ),
+        IndexingServiceError::Crawl(_) => ApiError::new(
+            StatusCode::BAD_GATEWAY,
+            "crawl_failed",
+            "The page could not be fetched.",
         ),
         IndexingServiceError::Storage(_) => ApiError::new(
             StatusCode::INTERNAL_SERVER_ERROR,

@@ -183,6 +183,36 @@ Returns:
 
 The current endpoint is a direct ingestion API. Crawling, sitemap discovery, robots policy, and queue-based jobs remain separate indexer work.
 
+## Crawl Jobs
+
+Gateway route:
+
+```txt
+POST /v1/sites/:siteId/crawl-jobs
+```
+
+Request:
+
+```json
+{
+  "url": "https://docs.acme.example/install"
+}
+```
+
+Returns:
+
+```json
+{
+  "site_id": "018f0000-0000-7000-9000-000000000001",
+  "url": "https://docs.acme.example/install",
+  "page_id": "018f0000-0000-7000-9000-000000000005",
+  "pages_indexed": 1,
+  "chunks_indexed": 3
+}
+```
+
+This is a synchronous single-page crawl. Queue-backed crawl jobs, sitemap discovery, and robots policy are separate work.
+
 ## Dashboard
 
 Dashboard routes require authenticated sessions.
@@ -191,6 +221,7 @@ Implemented bootstrap routes:
 
 - `POST /v1/sites`
 - `POST /v1/sites/:siteId/pages`
+- `POST /v1/sites/:siteId/crawl-jobs`
 
 Create site request:
 
@@ -218,7 +249,6 @@ Planned routes:
 
 - `GET /v1/sites`
 - `GET /v1/sites/:siteId`
-- `POST /v1/sites/:siteId/crawl-jobs`
 - `GET /v1/sites/:siteId/crawl-jobs/:jobId`
 - `GET /v1/sites/:siteId/questions`
 - `PATCH /v1/sites/:siteId/widget-config`

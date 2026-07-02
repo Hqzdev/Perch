@@ -12,6 +12,7 @@ perch-config.workspace = true
 perch-storage.workspace = true
 perch-types.workspace = true
 rag-core.workspace = true
+reqwest.workspace = true
 sqlx.workspace = true
 thiserror.workspace = true
 tokio.workspace = true

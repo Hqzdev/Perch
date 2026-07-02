@@ -211,6 +211,14 @@ curl -X POST http://localhost:18080/v1/sites/.../pages \
   -d '{"url":"https://docs.acme.example/install","title":"Install Perch","content":"Install Perch with one script tag.","content_type":"text"}'
 ```
 
+Crawl and index one page through Gateway:
+
+```sh
+curl -X POST http://localhost:18080/v1/sites/.../crawl-jobs \
+  -H 'content-type: application/json' \
+  -d '{"url":"https://docs.acme.example/install"}'
+```
+
 Connect the Next.js demo widget to Gateway:
 
 ```sh

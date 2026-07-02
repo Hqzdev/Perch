@@ -7,10 +7,10 @@ use axum::{
 use perch_config::RuntimeSettings;
 use perch_storage::Database;
 use perch_types::api::{
-    CreateSiteRequest, DependencyReadiness, DependencyStatus, ErrorBody, ErrorResponse,
-    HealthResponse, IndexPageResponse, IndexSitePageRequest, ReadinessResponse, ServiceStatus,
-    SiteResponse, WidgetChatRequest, WidgetChatResponse, WidgetCitation, WidgetConfigResponse,
-    WidgetFeatures, WidgetTheme,
+    CrawlJobResponse, CrawlSiteRequest, CreateSiteRequest, DependencyReadiness, DependencyStatus,
+    ErrorBody, ErrorResponse, HealthResponse, IndexPageResponse, IndexSitePageRequest,
+    ReadinessResponse, ServiceStatus, SiteResponse, WidgetChatRequest, WidgetChatResponse,
+    WidgetCitation, WidgetConfigResponse, WidgetFeatures, WidgetTheme,
 };
 use serde::Deserialize;
 
@@ -149,6 +149,20 @@ pub async fn index_site_page_handler(
         .map_err(api_error_from_site_error)?;
 
     Ok((StatusCode::CREATED, Json(page)))
+}
+
+pub async fn crawl_site_page_handler(
+    State(state): State<HttpState>,
+    Path(site_id): Path<uuid::Uuid>,
+    Json(request): Json<CrawlSiteRequest>,
+) -> Result<(StatusCode, Json<CrawlJobResponse>), ApiError> {
+    let response = state
+        .site_service
+        .crawl_site_page(site_id, request)
+        .await
+        .map_err(api_error_from_site_error)?;
+
+    Ok((StatusCode::CREATED, Json(response)))
 }
 
 pub async fn widget_config_handler(
