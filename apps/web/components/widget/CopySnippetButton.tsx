@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-const snippet = "<script src=\"https://cdn.perch.ai/widget.js\" data-perch-key=\"pk_live_8f2c...a91\"></script>";
+const snippet =
+  "<script src=\"http://localhost:18080/widget/perch.js\" data-perch-key=\"pk_dev_8f2c...a91\" data-perch-gateway=\"http://localhost:18080\"></script>";
 
 async function copySnippetText() {
   if (navigator.clipboard?.writeText) {

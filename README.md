@@ -41,29 +41,44 @@ FAQ, final CTA, and footer:
 
 Perch is a portfolio-grade SaaS architecture prototype. It is designed to show clean service boundaries, a working local demo, and honest RAG product mechanics without pretending to be production infrastructure.
 
-Implemented today:
+## What Works Now
 
-- Next.js product site with an embedded widget demo
-- Next.js dashboard preview for site owners, install snippets, indexed pages, and conversations
-- Rust Gateway, Indexer, and Retrieval services
-- Postgres-backed organizations, sites, pages, chunks, crawl jobs, conversations, and messages
-- site creation and widget config resolved by public widget key
-- standalone framework-free widget script served by Gateway
-- single-page crawl jobs with persisted status
+- site creation with generated public widget keys
+- owner dashboard with site status, install snippets, indexed pages, and conversations
+- standalone framework-free widget script served by Gateway at `/widget/perch.js`
+- widget config resolution by public key and browser origin
 - direct page ingestion for deterministic demos
-- retrieval over Qdrant vectors with Postgres keyword fallback and source citations
-- optional OpenAI-compatible LLM generation with deterministic fallback
-- Docker Compose local stack
-- CI for Rust, web build, and Compose config
+- single-page crawl jobs with persisted status
+- chunk storage in Postgres and vector storage in Qdrant
+- visitor chat routed through Gateway to Retrieval
+- source-cited answers with Qdrant vector search and Postgres keyword fallback
+- optional OpenAI-compatible LLM answer generation with deterministic fallback
+- local Docker Compose stack for Gateway, Indexer, Retrieval, Postgres, Redis, and Qdrant
+- CI for Rust formatting/checks, web build, and Compose validation
 
-Intentionally not production-ready yet:
+## Intentional Limits
 
-- no production auth or billing
-- no async Redis worker loop for crawl jobs
+- development owner token instead of production organization auth
+- Redis is configured as an operational dependency, but queue-backed crawl workers are not finished
+- no billing, subscription management, or enterprise SSO
+- no Kubernetes, Terraform, multi-region deployment, or service mesh
 - no external LLM call in the default demo unless `PERCH_LLM_PROVIDER=openai` is configured
-- permissive local CORS for development
+- permissive local CORS for development only
 
 This tradeoff is deliberate. The project is meant to be reviewable, runnable, and architecturally credible before adding heavier provider infrastructure.
+
+## Architecture At A Glance
+
+Perch is a microservice-style local architecture, not a monolith hidden behind folders:
+
+| Service | Responsibility |
+| --- | --- |
+| `gateway` | public API, owner dashboard API, widget config, origin checks, widget chat |
+| `indexer` | crawl jobs, page ingestion, text chunking, embeddings, Qdrant upserts |
+| `retrieval` | tenant-scoped retrieval, Qdrant search, fallback search, cited answer assembly |
+| `postgres` | organizations, sites, pages, chunks, crawl jobs, conversations, messages |
+| `qdrant` | vector index for page chunks |
+| `redis` | configured job/operational dependency for the async worker path |
 
 ## Portfolio Demo
 
@@ -137,7 +152,7 @@ apps/
 services/
   gateway/      edge API, tenant auth, widget config, rate limits
   indexer/      crawl jobs, extraction, chunking, embedding, upsert
-  retrieval/    search, rerank, prompt assembly, streamed answers
+  retrieval/    search, prompt assembly, cited answers
 
 crates/
   rag-core/     shared pure RAG logic
@@ -386,6 +401,10 @@ docker compose config
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md).
+
+## Release Checklist
+
+See [docs/release-checklist.md](docs/release-checklist.md) for the final portfolio verification checklist.
 
 ## Security
 

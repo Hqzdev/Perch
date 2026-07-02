@@ -54,9 +54,10 @@ export default async function DashboardPage() {
   const activeSite = data.detail?.site ?? data.sites[0] ?? demoSite;
   const installSnippet =
     data.detail?.install_snippet ??
-    `<script src="https://cdn.perch.ai/widget.js" data-perch-key="${activeSite.script_key}"></script>`;
-  const pages = data.pages.length > 0 ? data.pages : demoPages;
-  const conversations = data.conversations.length > 0 ? data.conversations : demoConversations;
+    `<script src="${gatewayUrl}/widget/perch.js" data-perch-key="${activeSite.script_key}" data-perch-gateway="${gatewayUrl}"></script>`;
+  const previewMode = !data.connected || !data.detail;
+  const pages = previewMode && data.pages.length === 0 ? demoPages : data.pages;
+  const conversations = previewMode && data.conversations.length === 0 ? demoConversations : data.conversations;
 
   return (
     <main className="dashboard-shell">
@@ -91,6 +92,34 @@ export default async function DashboardPage() {
           </a>
         </header>
 
+        <section className="dashboard-status-strip" aria-label="Dashboard status">
+          <article>
+            <span>Gateway</span>
+            <strong data-status={data.connected ? "live" : "offline"}>
+              {data.connected ? "Live data" : "Preview data"}
+            </strong>
+          </article>
+          <article>
+            <span>Sites</span>
+            <strong>{data.sites.length}</strong>
+          </article>
+          <article>
+            <span>Active origin</span>
+            <strong>{domainFromOrigin(activeSite.origin)}</strong>
+          </article>
+          <article>
+            <span>Mode</span>
+            <strong>{previewMode ? "Portfolio preview" : "Owner console"}</strong>
+          </article>
+        </section>
+
+        {previewMode ? (
+          <section className="dashboard-notice">
+            <strong>Preview mode</strong>
+            <span>Start the Docker stack and create a site to replace sample data with live Gateway data.</span>
+          </section>
+        ) : null}
+
         <section className="dashboard-grid" id="overview">
           <article className="dashboard-metric">
             <span>Indexed pages</span>
@@ -107,6 +136,27 @@ export default async function DashboardPage() {
             <strong>{compactKey(activeSite.script_key)}</strong>
             <small>{activeSite.origin}</small>
           </article>
+        </section>
+
+        <section className="dashboard-panel dashboard-sites-panel">
+          <div className="dashboard-panel-header">
+            <div>
+              <p className="dashboard-eyebrow">Sites</p>
+              <h2>Connected properties</h2>
+            </div>
+            <span className="dashboard-pill">{data.sites.length || 1} total</span>
+          </div>
+          <div className="dashboard-site-list">
+            {(data.sites.length > 0 ? data.sites : [demoSite]).map((site) => (
+              <article data-active={site.id === activeSite.id} key={site.id}>
+                <div>
+                  <strong>{site.name}</strong>
+                  <span>{site.origin}</span>
+                </div>
+                <small>{site.pages_indexed} pages</small>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="dashboard-layout">
@@ -211,16 +261,23 @@ export default async function DashboardPage() {
               <span className="dashboard-pill">{pages.length} pages</span>
             </div>
             <div className="dashboard-table">
-              {pages.map((page) => (
-                <div className="dashboard-row" key={page.id}>
-                  <div>
-                    <strong>{page.title ?? "Untitled page"}</strong>
-                    <span>{page.url}</span>
+              {pages.length > 0 ? (
+                pages.map((page) => (
+                  <div className="dashboard-row" key={page.id}>
+                    <div>
+                      <strong>{page.title ?? "Untitled page"}</strong>
+                      <span>{page.url}</span>
+                    </div>
+                    <small>{page.chunks_indexed} chunks</small>
+                    <em>{page.status}</em>
                   </div>
-                  <small>{page.chunks_indexed} chunks</small>
-                  <em>{page.status}</em>
+                ))
+              ) : (
+                <div className="dashboard-empty">
+                  <strong>No indexed pages yet</strong>
+                  <span>Create a site, then index a page to populate this table.</span>
                 </div>
-              ))}
+              )}
             </div>
           </article>
         </section>
@@ -234,15 +291,22 @@ export default async function DashboardPage() {
             <span className="dashboard-pill">{conversations.length} recent</span>
           </div>
           <div className="dashboard-conversations">
-            {conversations.map((conversation) => (
-              <article key={conversation.id}>
-                <div>
-                  <strong>{conversation.visitor_id ?? "anonymous visitor"}</strong>
-                  <span>{conversation.messages_count} messages</span>
-                </div>
-                <small>{formatDate(conversation.last_message_at ?? conversation.created_at)}</small>
-              </article>
-            ))}
+            {conversations.length > 0 ? (
+              conversations.map((conversation) => (
+                <article key={conversation.id}>
+                  <div>
+                    <strong>{conversation.visitor_id ?? "anonymous visitor"}</strong>
+                    <span>{conversation.messages_count} messages</span>
+                  </div>
+                  <small>{formatDate(conversation.last_message_at ?? conversation.created_at)}</small>
+                </article>
+              ))
+            ) : (
+              <div className="dashboard-empty">
+                <strong>No conversations yet</strong>
+                <span>Ask the widget a test question to create the first conversation.</span>
+              </div>
+            )}
           </div>
         </section>
       </section>

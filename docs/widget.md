@@ -39,6 +39,8 @@ The browser origin must match the site origin registered in Gateway.
 - visible citations
 - error state
 - loading state
+- disabled input while answering
+- open and message animations
 - closed bubble state
 - open chat state
 

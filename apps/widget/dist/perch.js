@@ -23,6 +23,7 @@
     connected: false,
     title: "Ask this site",
     status: "connecting",
+    pending: false,
     messages: [
       {
         role: "assistant",
@@ -46,7 +47,7 @@
       state.open ? panel() : "",
       '<button class="perch-launcher" type="button" aria-label="Open Perch assistant">',
       '<span class="perch-mark">P</span>',
-      "<span>Ask</span>",
+      "<span>" + escapeText(state.pending ? "Thinking" : "Ask") + "</span>",
       "</button>",
       "</div>"
     ].join("");
@@ -72,7 +73,7 @@
         event.preventDefault();
         var input = shadow.querySelector("input");
         var question = input.value.trim();
-        if (!question) {
+        if (!question || state.pending) {
           return;
         }
         input.value = "";
@@ -102,8 +103,8 @@
       state.status === "thinking" ? '<div class="perch-thinking"><span></span><span></span><span></span></div>' : "",
       "</div>",
       '<form class="perch-form">',
-      '<input autocomplete="off" placeholder="Ask a question" aria-label="Ask a question" />',
-      '<button type="submit">Send</button>',
+      '<input autocomplete="off" placeholder="' + escapeAttribute(state.pending ? "Perch is answering" : "Ask a question") + '" aria-label="Ask a question"' + disabledAttribute() + " />",
+      '<button type="submit"' + disabledAttribute() + ">" + escapeText(state.pending ? "Sending" : "Send") + "</button>",
       "</form>",
       "</section>"
     ].join("");
@@ -139,6 +140,7 @@
   function ask(question) {
     state.messages.push({ role: "visitor", text: question, citations: [] });
     state.status = "thinking";
+    state.pending = true;
     render();
     dispatch("perch:question", { question: question });
 
@@ -164,6 +166,7 @@
           citations: answer.citations || []
         });
         state.status = "ready";
+        state.pending = false;
         render();
         dispatch("perch:answer", { citations: answer.citations || [] });
       })
@@ -174,6 +177,7 @@
           citations: []
         });
         state.status = "error";
+        state.pending = false;
         render();
         dispatch("perch:error", {});
       });
@@ -250,19 +254,24 @@
     return escapeText(value).replace(/"/g, "&quot;");
   }
 
+  function disabledAttribute() {
+    return state.pending ? " disabled" : "";
+  }
+
   function css() {
     return [
       ":host{all:initial;color-scheme:light}",
       ".perch-root{position:fixed;right:22px;bottom:22px;z-index:2147483647;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#14241d}",
-      ".perch-launcher{height:48px;display:inline-flex;align-items:center;gap:9px;border:0;border-radius:999px;background:#12b76a;color:#fff;padding:0 17px;box-shadow:0 14px 28px -16px rgba(20,36,29,.65);font:700 14px/1 Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}",
+      ".perch-launcher{height:48px;display:inline-flex;align-items:center;gap:9px;border:0;border-radius:999px;background:#12b76a;color:#fff;padding:0 17px;box-shadow:0 14px 28px -16px rgba(20,36,29,.65);font:700 14px/1 Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:transform 180ms ease,box-shadow 180ms ease,background 180ms ease}",
+      ".perch-launcher:hover{transform:translateY(-1px);box-shadow:0 18px 34px -18px rgba(20,36,29,.72)}",
       ".perch-mark{width:28px;height:28px;display:inline-grid;place-items:center;border-radius:9px;background:#14241d;color:#fff;font-weight:800}",
-      ".perch-panel{width:min(380px,calc(100vw - 28px));height:min(560px,calc(100vh - 112px));margin-bottom:12px;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e7e4d8;border-radius:16px;background:#fcfbf7;box-shadow:0 30px 70px -28px rgba(20,36,29,.48)}",
+      ".perch-panel{width:min(380px,calc(100vw - 28px));height:min(560px,calc(100vh - 112px));margin-bottom:12px;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e7e4d8;border-radius:16px;background:#fcfbf7;box-shadow:0 30px 70px -28px rgba(20,36,29,.48);animation:perch-panel-in 220ms cubic-bezier(.16,1,.3,1) both}",
       ".perch-header{display:flex;align-items:center;gap:11px;padding:14px;background:#14241d;color:#fff}",
       ".perch-header strong{display:block;font-size:14px}",
       ".perch-header small{display:block;margin-top:2px;color:#9cb3a8;font-size:12px}",
       ".perch-header button{margin-left:auto;width:32px;height:32px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:22px;cursor:pointer}",
       ".perch-messages{flex:1;display:flex;flex-direction:column;gap:10px;overflow:auto;padding:14px;background:linear-gradient(180deg,#fcfbf7,#f6f4ec)}",
-      ".perch-message{max-width:86%;border:1px solid #efede3;border-radius:13px;padding:10px 11px;background:#fff}",
+      ".perch-message{max-width:86%;border:1px solid #efede3;border-radius:13px;padding:10px 11px;background:#fff;animation:perch-message-in 180ms ease both}",
       ".perch-message[data-role='visitor']{align-self:flex-end;border-color:#bee8d0;background:#eaf7ef}",
       ".perch-message p{margin:0;font-size:13px;line-height:1.45;color:#14241d}",
       ".perch-citations{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}",
@@ -274,8 +283,12 @@
       "@keyframes perch-bounce{0%,80%,100%{opacity:.35;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}",
       ".perch-form{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px;border-top:1px solid #e7e4d8;background:#fff}",
       ".perch-form input{min-width:0;border:1px solid #d8d5c8;border-radius:999px;padding:0 12px;font:500 13px/38px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#14241d}",
+      ".perch-form input:disabled{background:#f4f2ea;color:#8a968f}",
       ".perch-form button{height:38px;border:0;border-radius:999px;background:#14241d;color:#fff;padding:0 14px;font:700 13px/1 Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}",
-      "@media(max-width:520px){.perch-root{right:12px;bottom:12px;left:12px}.perch-panel{width:100%;height:min(560px,calc(100vh - 92px))}.perch-launcher{float:right}}"
+      ".perch-form button:disabled{background:#d8d5c8;color:#68756f;cursor:not-allowed}",
+      "@keyframes perch-panel-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}",
+      "@keyframes perch-message-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}",
+      "@media(max-width:520px){.perch-root{right:12px;bottom:12px;left:12px}.perch-panel{width:100%;height:min(560px,calc(100vh - 92px));border-radius:14px}.perch-launcher{float:right}}"
     ].join("");
   }
 
