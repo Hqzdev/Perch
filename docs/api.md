@@ -33,12 +33,12 @@ Returns:
   "dependencies": [
     { "name": "postgres", "status": "ok" },
     { "name": "redis", "status": "configured" },
-    { "name": "qdrant", "status": "configured" }
+    { "name": "qdrant", "status": "ok" }
   ]
 }
 ```
 
-When Postgres is unavailable, `/ready` returns HTTP 503 and marks the service as `unavailable`.
+When a required dependency is unavailable, `/ready` returns HTTP 503 and marks the service as `unavailable`. Gateway requires Postgres. Indexer and Retrieval require Postgres plus Qdrant when vector search is enabled.
 
 ## Public Widget
 
@@ -111,7 +111,7 @@ Returns:
 }
 ```
 
-Gateway validates the widget key and origin, then calls Retrieval through `POST /v1/answer`. Retrieval currently searches Postgres `page_chunks` with a simple keyword lookup. Qdrant vector search and streaming are the next backend stage.
+Gateway validates the widget key and origin, then calls Retrieval through `POST /v1/answer`. Retrieval searches Qdrant vectors first, falls back to Postgres `page_chunks`, and returns citations from indexed source pages.
 
 ## Internal Retrieval
 

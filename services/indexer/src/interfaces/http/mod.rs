@@ -81,7 +81,17 @@ pub async fn readiness_handler(
         Ok(()) => DependencyStatus::Ok,
         Err(_) => DependencyStatus::Unavailable,
     };
-    let service_status = if postgres_status == DependencyStatus::Ok {
+    let qdrant_status = if state.settings.vector_search.enabled {
+        match state.indexing_service.vector_ready().await {
+            Ok(()) => DependencyStatus::Ok,
+            Err(_) => DependencyStatus::Unavailable,
+        }
+    } else {
+        DependencyStatus::Configured
+    };
+    let service_status = if postgres_status == DependencyStatus::Ok
+        && qdrant_status != DependencyStatus::Unavailable
+    {
         ServiceStatus::Ok
     } else {
         ServiceStatus::Unavailable
@@ -109,7 +119,7 @@ pub async fn readiness_handler(
                 },
                 DependencyReadiness {
                     name: "qdrant".to_string(),
-                    status: DependencyStatus::Configured,
+                    status: qdrant_status,
                 },
             ],
         }),

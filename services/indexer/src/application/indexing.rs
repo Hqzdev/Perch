@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::domain::pages::{text_from_html, IndexedPage, PageDocument};
 use crate::infrastructure::crawler::{WebCrawler, WebCrawlerError};
-use crate::infrastructure::qdrant::QdrantVectorStore;
+use crate::infrastructure::qdrant::{QdrantVectorStore, QdrantVectorStoreError};
 use crate::infrastructure::storage::{PageRepository, PageRepositoryError};
 
 #[derive(Debug, Clone)]
@@ -53,6 +53,12 @@ impl IndexingService {
         let site_id = document.site_id;
         let chunks = chunk_text(&document.content, ChunkingConfig::conservative());
         let indexed = self.repository.upsert_page(document, chunks).await?;
+        tracing::info!(
+            site_id = %site_id,
+            page_id = %indexed.page_id,
+            chunks_indexed = indexed.chunks_indexed,
+            "page indexed"
+        );
 
         if let Err(error) = self
             .vectors
@@ -60,9 +66,20 @@ impl IndexingService {
             .await
         {
             tracing::warn!(error = %error, page_id = %indexed.page_id, "vector projection failed");
+        } else {
+            tracing::info!(
+                site_id = %site_id,
+                page_id = %indexed.page_id,
+                chunks_indexed = indexed.chunks_indexed,
+                "vector projection succeeded"
+            );
         }
 
         Ok(indexed)
+    }
+
+    pub async fn vector_ready(&self) -> Result<(), QdrantVectorStoreError> {
+        self.vectors.ready().await
     }
 
     pub async fn crawl_page(

@@ -63,6 +63,7 @@ services:
       PERCH_QDRANT_COLLECTION: perch_chunks
       PERCH_INDEXER_URL: http://indexer:8081
       PERCH_RETRIEVAL_URL: http://retrieval:8082
+      RUST_LOG: info
     ports:
       - "${PERCH_GATEWAY_PORT:-18080}:8080"
     depends_on:
@@ -94,6 +95,7 @@ services:
       PERCH_QDRANT_URL: http://qdrant:6333
       PERCH_QDRANT_ENABLED: "true"
       PERCH_QDRANT_COLLECTION: perch_chunks
+      RUST_LOG: info
     ports:
       - "${PERCH_INDEXER_PORT:-18081}:8081"
     depends_on:
@@ -124,6 +126,7 @@ services:
       PERCH_LLM_PROVIDER: disabled
       PERCH_LLM_MODEL: gpt-4o-mini
       PERCH_LLM_BASE_URL: https://api.openai.com/v1
+      RUST_LOG: info
     ports:
       - "${PERCH_RETRIEVAL_PORT:-18082}:8082"
     depends_on:

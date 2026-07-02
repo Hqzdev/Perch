@@ -54,17 +54,47 @@ impl AnswerService {
             }
         };
         let context = if vector_context.has_sources() {
+            tracing::info!(
+                site_id = %request.site_id,
+                chunks = vector_context.chunks.len(),
+                retrieval_path = "qdrant",
+                "retrieval context selected"
+            );
             vector_context
         } else {
-            self.repository
+            let fallback_context = self
+                .repository
                 .search(request.site_id, &request.question)
-                .await?
+                .await?;
+
+            if fallback_context.has_sources() {
+                tracing::info!(
+                    site_id = %request.site_id,
+                    chunks = fallback_context.chunks.len(),
+                    retrieval_path = "postgres",
+                    "retrieval context selected"
+                );
+            } else {
+                tracing::info!(
+                    site_id = %request.site_id,
+                    retrieval_path = "none",
+                    "retrieval context missing"
+                );
+            }
+
+            fallback_context
         };
 
         Ok(if context.has_sources() {
             match self.generator.generate(&request, &context).await {
-                Ok(answer) => generated_answer(answer, context),
-                Err(AnswerGeneratorError::Disabled) => sourced_answer(&request, context),
+                Ok(answer) => {
+                    tracing::info!(site_id = %request.site_id, "llm answer generated");
+                    generated_answer(answer, context)
+                }
+                Err(AnswerGeneratorError::Disabled) => {
+                    tracing::info!(site_id = %request.site_id, "deterministic answer generated");
+                    sourced_answer(&request, context)
+                }
                 Err(error) => {
                     tracing::warn!(error = %error, site_id = %request.site_id, "llm generation skipped");
                     sourced_answer(&request, context)
@@ -73,6 +103,10 @@ impl AnswerService {
         } else {
             fallback_answer(&request)
         })
+    }
+
+    pub async fn vector_ready(&self) -> Result<(), QdrantContextRepositoryError> {
+        self.vectors.ready().await
     }
 }
 

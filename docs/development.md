@@ -75,7 +75,7 @@ indexer    http://localhost:18081/health
 retrieval  http://localhost:18082/health
 ```
 
-Readiness endpoints expose service config readiness:
+Readiness endpoints expose dependency readiness:
 
 ```txt
 gateway    http://localhost:18080/ready
@@ -83,7 +83,7 @@ indexer    http://localhost:18081/ready
 retrieval  http://localhost:18082/ready
 ```
 
-`/ready` returns HTTP 503 when Postgres cannot be reached. Redis and Qdrant are still configuration-only checks until their adapters exist.
+`/ready` returns HTTP 503 when a required dependency cannot be reached. Gateway requires Postgres. Indexer and Retrieval require Postgres plus Qdrant when `PERCH_QDRANT_ENABLED=true`; disabled Qdrant is reported as `configured`.
 
 ## Local Infrastructure
 
@@ -105,6 +105,12 @@ Check service state:
 
 ```sh
 docker compose ps
+```
+
+Run the end-to-end smoke test:
+
+```sh
+./scripts/smoke-test.sh
 ```
 
 Run migrations only:

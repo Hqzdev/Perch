@@ -84,6 +84,16 @@ impl QdrantVectorStore {
         }
     }
 
+    pub async fn ready(&self) -> Result<(), QdrantVectorStoreError> {
+        if !self.settings.enabled {
+            return Ok(());
+        }
+
+        let response = self.client.get(self.ready_url()).send().await?;
+
+        self.accept(response).await
+    }
+
     pub async fn upsert_page_chunks(
         &self,
         site_id: Uuid,
@@ -184,6 +194,13 @@ impl QdrantVectorStore {
             "{}/collections/{}",
             self.settings.url.as_str().trim_end_matches('/'),
             self.settings.collection
+        )
+    }
+
+    fn ready_url(&self) -> String {
+        format!(
+            "{}/readyz",
+            self.settings.url.as_str().trim_end_matches('/')
         )
     }
 }

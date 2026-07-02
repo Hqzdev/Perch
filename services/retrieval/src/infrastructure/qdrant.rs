@@ -70,6 +70,16 @@ impl QdrantContextRepository {
         }
     }
 
+    pub async fn ready(&self) -> Result<(), QdrantContextRepositoryError> {
+        if !self.settings.enabled {
+            return Ok(());
+        }
+
+        let response = self.client.get(self.ready_url()).send().await?;
+
+        self.accept(response).await
+    }
+
     pub async fn search(
         &self,
         site_id: Uuid,
@@ -121,11 +131,32 @@ impl QdrantContextRepository {
         Ok(RetrievedContext { chunks })
     }
 
+    async fn accept(
+        &self,
+        response: reqwest::Response,
+    ) -> Result<(), QdrantContextRepositoryError> {
+        if response.status().is_success() {
+            return Ok(());
+        }
+
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+
+        Err(QdrantContextRepositoryError::Response { status, body })
+    }
+
     fn collection_url(&self) -> String {
         format!(
             "{}/collections/{}",
             self.settings.url.as_str().trim_end_matches('/'),
             self.settings.collection
+        )
+    }
+
+    fn ready_url(&self) -> String {
+        format!(
+            "{}/readyz",
+            self.settings.url.as_str().trim_end_matches('/')
         )
     }
 }

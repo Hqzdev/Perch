@@ -56,6 +56,14 @@ Run the end-to-end demo:
 
 The script creates a site, indexes one page through Gateway, asks a widget question, and prints the cited answer.
 
+Run the stricter smoke test before showing the backend:
+
+```sh
+./scripts/smoke-test.sh
+```
+
+The smoke test checks readiness, creates a tenant site, indexes a page, verifies Qdrant points, calls widget chat, and fails if the answer does not include a source citation.
+
 See [docs/demo.md](docs/demo.md) for the exact flow.
 
 ## Product Scope
@@ -194,6 +202,8 @@ flowchart TB
   Pg --> GatewayReady["gateway /ready"]
   Pg --> IndexerReady["indexer /ready"]
   Pg --> RetrievalReady["retrieval /ready"]
+  Qd --> IndexerReady
+  Qd --> RetrievalReady
 ```
 
 ## Web App
@@ -236,6 +246,8 @@ Current services:
 
 Each service exposes a minimal `/health` endpoint and is ready for the first real application use cases.
 
+Readiness is dependency-aware. Gateway requires Postgres. Indexer and Retrieval require Postgres plus Qdrant when `PERCH_QDRANT_ENABLED=true`; if Qdrant is disabled, it is reported as `configured`.
+
 Current backend product endpoints:
 
 ```txt
@@ -267,6 +279,31 @@ http://localhost:6335/readyz
 
 Gateway is exposed on `localhost:18080`, indexer on `localhost:18081`, retrieval on `localhost:18082`, Postgres on `localhost:5433`, Redis on `localhost:6380`, and Qdrant on `localhost:6335` by default to avoid colliding with common local services.
 
+Default local mode is deterministic and does not require provider keys:
+
+```sh
+PERCH_QDRANT_ENABLED=true
+PERCH_QDRANT_COLLECTION=perch_chunks
+PERCH_LLM_PROVIDER=disabled
+```
+
+Enable OpenAI-compatible answer generation only when you want the final wording drafted by an LLM:
+
+```sh
+PERCH_LLM_PROVIDER=openai
+PERCH_LLM_MODEL=gpt-4o-mini
+PERCH_LLM_API_KEY=sk_...
+PERCH_LLM_BASE_URL=https://api.openai.com/v1
+```
+
+Retrieval still uses indexed source chunks and returns citations. The LLM layer changes answer wording, not tenant isolation or source grounding.
+
+The Compose stack runs backend services with `RUST_LOG=info`, so indexing, vector projection, retrieval path selection, and LLM fallback decisions are visible through:
+
+```sh
+docker compose logs indexer retrieval
+```
+
 ## Quality Gates
 
 Run the same checks as CI:
@@ -274,8 +311,9 @@ Run the same checks as CI:
 ```sh
 cargo fmt --all -- --check
 cargo check --workspace
-cd apps/web && npm ci && npm run build
+(cd apps/web && npm ci && npm run build)
 docker compose config
+./scripts/smoke-test.sh
 ```
 
 ## Roadmap

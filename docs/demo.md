@@ -14,6 +14,14 @@ Run the portfolio demo:
 
 The script creates a site, indexes one source page through Gateway, asks the widget chat endpoint a question, and prints the grounded answer plus citations.
 
+Run the smoke test when you need a failing proof instead of a printed demo:
+
+```sh
+./scripts/smoke-test.sh
+```
+
+It checks service readiness, creates a unique site, indexes a page, verifies Qdrant has stored points, calls widget chat, and asserts that the response includes the indexed source URL.
+
 Expected flow:
 
 ```txt
@@ -30,4 +38,4 @@ script
   -> cited answer
 ```
 
-The local demo uses deterministic hash embeddings and keeps `PERCH_LLM_PROVIDER=disabled`, so Qdrant retrieval works without external API keys. Set `PERCH_LLM_PROVIDER=openai`, `PERCH_LLM_API_KEY`, and `PERCH_LLM_MODEL` to let retrieval generate the final answer with an OpenAI-compatible chat completion API. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.
+The local demo uses deterministic hash embeddings and keeps `PERCH_LLM_PROVIDER=disabled`, so Qdrant retrieval works without external API keys. Set `PERCH_LLM_PROVIDER=openai`, `PERCH_LLM_API_KEY`, and `PERCH_LLM_MODEL` to let retrieval generate the final answer with an OpenAI-compatible chat completion API. The answer still uses retrieved source chunks and returns citations. The crawl job API is implemented separately for single-page fetches, while queue-backed crawling remains future work.

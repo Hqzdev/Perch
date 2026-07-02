@@ -38,3 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose config
+
+  scripts:
+    name: Script syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash -n scripts/portfolio-demo.sh scripts/smoke-test.sh
