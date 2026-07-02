@@ -6,6 +6,12 @@ Perch is a drop-in AI assistant for websites. Add one script tag, crawl the site
 
 Perch is built around one narrow promise: visitors should be able to ask a website what it already says, and every useful answer should point back to the page that supports it.
 
+## Screenshots
+
+![Perch website hero](apps/web/public/screenshots/perch-home-hero.png)
+
+![Perch cited answer demo](apps/web/public/screenshots/perch-demo-section.png)
+
 ## Status
 
 Perch is a portfolio-grade SaaS architecture prototype. It is designed to show clean service boundaries, a working local demo, and honest RAG product mechanics without pretending to be production infrastructure.
